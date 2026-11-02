@@ -40,7 +40,7 @@
             <div class="card filter-card mb-4">
                 <div class="card-body">
                     <form action="${ctx}/admin/students" method="get" class="row g-2 g-lg-3 align-items-end">
-                        <div class="col-12 col-lg-3">
+                        <div class="col-12 col-lg-6 col-xxl-3">
                             <label for="keyword" class="form-label small">Search</label>
                             <div class="input-icon">
                                 <i class="bi bi-search"></i>
@@ -48,7 +48,7 @@
                                        value="${fn:escapeXml(filter.keyword)}" placeholder="Name, roll no. or email">
                             </div>
                         </div>
-                        <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="col-12 col-sm-6 col-lg-6 col-xxl-3">
                             <label for="department" class="form-label small">Department</label>
                             <select class="form-select" id="department" name="department">
                                 <option value="">All departments</option>
@@ -57,7 +57,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="col-6 col-sm-3 col-lg-2">
+                        <div class="col-6 col-sm-3 col-lg-4 col-xxl-2">
                             <label for="semester" class="form-label small">Semester</label>
                             <select class="form-select" id="semester" name="semester">
                                 <option value="">All</option>
@@ -66,7 +66,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="col-6 col-sm-3 col-lg-2">
+                        <div class="col-6 col-sm-3 col-lg-4 col-xxl-2">
                             <label for="status" class="form-label small">Status</label>
                             <select class="form-select" id="status" name="status">
                                 <option value="">All</option>
@@ -75,7 +75,7 @@
                                 </c:forEach>
                             </select>
                         </div>
-                        <div class="col-12 col-lg-2 d-flex gap-2">
+                        <div class="col-12 col-lg-4 col-xxl-2 d-flex gap-2">
                             <button type="submit" class="btn btn-primary flex-grow-1 text-nowrap"><i class="bi bi-funnel me-1"></i>Apply</button>
                             <c:if test="${filter.active}">
                                 <a href="${ctx}/admin/students" class="btn btn-light-soft px-3" title="Clear all filters" aria-label="Clear all filters">
@@ -131,11 +131,11 @@
                                 <thead>
                                 <tr>
                                     <th>Student</th>
-                                    <th>Roll Number</th>
+                                    <th class="d-none d-sm-table-cell">Roll Number</th>
                                     <th class="d-none d-lg-table-cell">Department / Course</th>
-                                    <th class="d-none d-md-table-cell text-center">Semester</th>
+                                    <th class="d-none d-lg-table-cell text-center" title="Semester">Sem.</th>
                                     <th>Status</th>
-                                    <th class="d-none d-xl-table-cell">Registered</th>
+                                    <th class="d-none d-xxl-table-cell">Registered</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                                 </thead>
@@ -144,24 +144,24 @@
                                     <tr>
                                         <td>
                                             <div class="student-cell">
-                                                <span class="avatar avatar-c${s.studentId % 6}"><c:out value="${s.initials}"/></span>
-                                                <div class="text-truncate">
+                                                <span class="avatar avatar-c${s.studentId % 6} d-none d-sm-inline-flex"><c:out value="${s.initials}"/></span>
+                                                <div class="student-text text-truncate" title="${fn:escapeXml(s.fullName)} (${fn:escapeXml(s.email)})">
                                                     <a href="${ctx}/admin/students/view?id=${s.studentId}"><c:out value="${s.fullName}"/></a>
                                                     <small class="text-truncate"><c:out value="${s.email}"/></small>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="mono text-nowrap-cell"><c:out value="${s.rollNumber}"/></td>
+                                        <td class="d-none d-sm-table-cell mono text-nowrap-cell"><c:out value="${s.rollNumber}"/></td>
                                         <td class="d-none d-lg-table-cell">
                                             <div class="small fw-medium"><c:out value="${s.department}"/></div>
                                             <div class="small text-muted"><c:out value="${s.course}"/></div>
                                         </td>
-                                        <td class="d-none d-md-table-cell text-center">${s.semester}</td>
+                                        <td class="d-none d-lg-table-cell text-center">${s.semester}</td>
                                         <td><span class="status-badge ${s.active ? 'status-active' : 'status-inactive'}"><c:out value="${s.status}"/></span></td>
-                                        <td class="d-none d-xl-table-cell text-muted small text-nowrap-cell"><c:out value="${s.createdDateFormatted}"/></td>
+                                        <td class="d-none d-xxl-table-cell text-muted small text-nowrap-cell"><c:out value="${s.createdDateFormatted}"/></td>
                                         <td class="text-end text-nowrap-cell">
                                             <a href="${ctx}/admin/students/view?id=${s.studentId}" class="btn btn-light-soft btn-icon" title="View profile" aria-label="View profile of ${fn:escapeXml(s.fullName)}"><i class="bi bi-eye"></i></a>
-                                            <a href="${ctx}/admin/students/edit?id=${s.studentId}" class="btn btn-light-soft btn-icon" title="Edit" aria-label="Edit ${fn:escapeXml(s.fullName)}"><i class="bi bi-pencil"></i></a>
+                                            <a href="${ctx}/admin/students/edit?id=${s.studentId}" class="btn btn-light-soft btn-icon d-none d-md-inline-flex" title="Edit" aria-label="Edit ${fn:escapeXml(s.fullName)}"><i class="bi bi-pencil"></i></a>
                                             <form action="${ctx}/admin/students/delete" method="post" class="d-inline"
                                                   data-confirm="Delete ${fn:escapeXml(s.fullName)} (${fn:escapeXml(s.rollNumber)})? This permanently removes the record from the database."
                                                   data-confirm-title="Delete student?" data-confirm-button="Delete">

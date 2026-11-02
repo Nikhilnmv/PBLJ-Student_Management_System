@@ -1,13 +1,13 @@
 <%--
-    Admin sidebar navigation. On large screens it is always visible; on
-    phones and tablets it slides in from the left (Bootstrap "offcanvas").
+    Admin sidebar navigation. On screens 1200px and wider it is always visible; on
+    phones, tablets and small laptops it slides in from the left (Bootstrap "offcanvas").
 
     The including page sets ${activePage} to "dashboard", "students" or
     "add" to highlight the current menu item.
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<aside class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel">
-    <div class="offcanvas-header d-lg-none">
+<aside class="sidebar offcanvas-xl offcanvas-start" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel">
+    <div class="offcanvas-header d-xl-none">
         <span class="fw-semibold" id="adminSidebarLabel">Menu</span>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
                 data-bs-target="#adminSidebar" aria-label="Close menu"></button>

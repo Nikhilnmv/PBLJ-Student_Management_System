@@ -98,7 +98,7 @@
                                         <thead>
                                         <tr>
                                             <th>Student</th>
-                                            <th class="d-none d-md-table-cell">Department</th>
+                                            <th class="d-none d-md-table-cell d-xl-none d-xxl-table-cell">Department</th>
                                             <th class="d-none d-sm-table-cell">Registered</th>
                                             <th>Status</th>
                                         </tr>
@@ -115,7 +115,7 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="d-none d-md-table-cell small"><c:out value="${s.department}"/></td>
+                                                <td class="d-none d-md-table-cell d-xl-none d-xxl-table-cell small"><c:out value="${s.department}"/></td>
                                                 <td class="d-none d-sm-table-cell text-muted text-nowrap-cell"><c:out value="${s.createdDateFormatted}"/></td>
                                                 <td>
                                                     <span class="status-badge ${s.active ? 'status-active' : 'status-inactive'}"><c:out value="${s.status}"/></span>

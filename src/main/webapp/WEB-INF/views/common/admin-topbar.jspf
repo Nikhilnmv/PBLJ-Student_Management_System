@@ -1,10 +1,10 @@
 <%--
-    Admin top bar: menu button (phones/tablets), page title and the
+    Admin top bar: menu button (screens narrower than 1200px), page title and the
     logged-in administrator. Uses ${pageTitle} set by the including page.
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <header class="topbar">
-    <button class="btn btn-light-soft btn-icon d-lg-none" type="button" data-bs-toggle="offcanvas"
+    <button class="btn btn-light-soft btn-icon d-xl-none" type="button" data-bs-toggle="offcanvas"
             data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Open menu">
         <i class="bi bi-list fs-5"></i>
     </button>

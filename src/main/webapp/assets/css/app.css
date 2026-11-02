@@ -298,7 +298,7 @@ h1, h2, h3, h4, h5, h6 { color: var(--srs-navy-900); font-weight: 700; letter-sp
     width: var(--srs-sidebar-width); background: var(--srs-navy-900); color: #fff;
     background-image: linear-gradient(180deg, var(--srs-navy-900) 0%, var(--srs-navy-950) 100%);
 }
-@media (min-width: 992px) {
+@media (min-width: 1200px) {
     .sidebar { position: sticky; top: 0; height: 100vh; flex-shrink: 0; }
     /* paint the sidebar colour down the whole page, even below the sticky sidebar */
     .admin-layout { background: linear-gradient(90deg, var(--srs-navy-950) var(--srs-sidebar-width), var(--srs-bg) var(--srs-sidebar-width)); }
@@ -373,6 +373,7 @@ h1, h2, h3, h4, h5, h6 { color: var(--srs-navy-900); font-weight: 700; letter-sp
 .student-cell a { color: var(--srs-navy-900); font-weight: 600; text-decoration: none; }
 .student-cell a:hover { color: var(--srs-primary); }
 .student-cell small { display: block; color: var(--srs-muted); font-size: 0.8rem; }
+.student-cell .student-text { max-width: 170px; } /* long emails end with "..." instead of widening the table */
 .text-nowrap-cell { white-space: nowrap; }
 .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85rem; }
 
@@ -405,8 +406,16 @@ h1, h2, h3, h4, h5, h6 { color: var(--srs-navy-900); font-weight: 700; letter-sp
 .error-code { font-size: 4.5rem; font-weight: 700; line-height: 1; background: linear-gradient(135deg, var(--srs-navy-700), var(--srs-primary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 /* ---------- 8. Small screens ---------- */
-@media (max-width: 991.98px) {
+@media (max-width: 1199.98px) {
     .sidebar { width: min(var(--srs-sidebar-width), 85vw); }
+}
+@media (max-width: 767.98px) {
+    /* narrower table cells so the student list fits on phones */
+    .table-modern thead th, .table-modern tbody td { padding-left: 0.6rem; padding-right: 0.6rem; }
+    .student-cell { min-width: 0; }
+    .student-cell .student-text { max-width: 150px; }
+}
+@media (max-width: 991.98px) {
     .topbar { padding: 0 1rem; }
     .page-content { padding: 1.25rem 1rem; }
     .admin-footer { padding: 1rem; }
@@ -414,6 +423,7 @@ h1, h2, h3, h4, h5, h6 { color: var(--srs-navy-900); font-weight: 700; letter-sp
 }
 @media (max-width: 575.98px) {
     .form-card > .card-body { padding: 1.25rem; }
+    .student-cell .student-text { max-width: 110px; }
     .hero-home { padding: 3.5rem 0 6.5rem; }
     .registration-ticket .ticket-id { font-size: 1.6rem; }
     .stat-card .stat-value { font-size: 1.7rem; }

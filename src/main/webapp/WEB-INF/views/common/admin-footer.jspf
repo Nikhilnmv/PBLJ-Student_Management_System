@@ -1,0 +1,5 @@
+<%-- Footer shown at the bottom of every admin page. --%>
+<footer class="admin-footer d-flex flex-column flex-sm-row justify-content-between gap-1">
+    <span>Student Registration System &middot; Admin Panel</span>
+    <span>Java Servlets &middot; JSP &middot; JDBC &middot; MySQL</span>
+</footer>

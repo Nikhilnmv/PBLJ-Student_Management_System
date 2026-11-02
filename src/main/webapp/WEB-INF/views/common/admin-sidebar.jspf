@@ -1,0 +1,65 @@
+<%--
+    Admin sidebar navigation. On large screens it is always visible; on
+    phones and tablets it slides in from the left (Bootstrap "offcanvas").
+
+    The including page sets ${activePage} to "dashboard", "students" or
+    "add" to highlight the current menu item.
+--%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<aside class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel">
+    <div class="offcanvas-header d-lg-none">
+        <span class="fw-semibold" id="adminSidebarLabel">Menu</span>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                data-bs-target="#adminSidebar" aria-label="Close menu"></button>
+    </div>
+    <div class="offcanvas-body">
+        <a href="${ctx}/admin/dashboard" class="sidebar-brand">
+            <span class="brand-mark"><i class="bi bi-mortarboard-fill"></i></span>
+            <span><strong>Student Registration</strong><small>Admin Panel</small></span>
+        </a>
+
+        <div class="sidebar-label small-caps">Overview</div>
+        <nav class="nav flex-column">
+            <a class="nav-link${activePage == 'dashboard' ? ' active' : ''}" href="${ctx}/admin/dashboard">
+                <i class="bi bi-grid-1x2"></i> Dashboard
+            </a>
+        </nav>
+
+        <div class="sidebar-label small-caps">Students</div>
+        <nav class="nav flex-column">
+            <a class="nav-link${activePage == 'students' ? ' active' : ''}" href="${ctx}/admin/students">
+                <i class="bi bi-people"></i> All Students
+            </a>
+            <a class="nav-link${activePage == 'add' ? ' active' : ''}" href="${ctx}/admin/students/add">
+                <i class="bi bi-person-plus"></i> Add Student
+            </a>
+            <a class="nav-link" href="${ctx}/admin/students/export">
+                <i class="bi bi-filetype-csv"></i> Export CSV
+            </a>
+        </nav>
+
+        <div class="sidebar-label small-caps">Public</div>
+        <nav class="nav flex-column">
+            <a class="nav-link" href="${ctx}/register" target="_blank" rel="noopener">
+                <i class="bi bi-box-arrow-up-right"></i> Registration Form
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <span class="avatar"><i class="bi bi-person"></i></span>
+                <div class="text-truncate">
+                    <div class="fw-semibold text-truncate"><c:out value="${sessionScope.loggedInAdmin.username}"/></div>
+                    <small>Administrator</small>
+                </div>
+            </div>
+            <%-- Logout is a POST with the CSRF token (checked by AuthFilter) --%>
+            <form action="${ctx}/admin/logout" method="post">
+                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                <button type="submit" class="btn btn-sm btn-sidebar-logout">
+                    <i class="bi bi-box-arrow-right me-1"></i> Log out
+                </button>
+            </form>
+        </div>
+    </div>
+</aside>

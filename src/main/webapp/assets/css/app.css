@@ -427,6 +427,7 @@ h1, h2, h3, h4, h5, h6 { color: var(--srs-navy-900); font-weight: 700; letter-sp
     body { background: #fff !important; font-size: 12pt; }
     .sidebar, .topbar, .admin-footer, .public-navbar, .site-footer, .no-print, .btn, .alert, .hero { display: none !important; }
     .print-only { display: block !important; }
+    .admin-layout, .admin-main, .page-content { display: block !important; background: #fff !important; }
     .page-content, .container { padding: 0 !important; max-width: 100% !important; }
     .overlap-section { margin-top: 0 !important; }
     .card, .form-card { box-shadow: none !important; border: 1px solid #ccd3e0 !important; break-inside: avoid; }

@@ -53,13 +53,13 @@
                     </dl>
 
                     <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center mt-4 no-print">
-                        <button type="button" class="btn btn-light-soft" data-action="print">
+                        <button type="button" class="btn btn-light-soft text-nowrap" data-action="print">
                             <i class="bi bi-printer me-2"></i>Print
                         </button>
-                        <a href="${ctx}/register" class="btn btn-outline-primary">
-                            <i class="bi bi-person-plus me-2"></i>Register Another Student
+                        <a href="${ctx}/register" class="btn btn-outline-primary text-nowrap">
+                            <i class="bi bi-person-plus me-2"></i>Register Another
                         </a>
-                        <a href="${ctx}/" class="btn btn-primary">
+                        <a href="${ctx}/" class="btn btn-primary text-nowrap">
                             <i class="bi bi-house me-2"></i>Back to Home
                         </a>
                     </div>

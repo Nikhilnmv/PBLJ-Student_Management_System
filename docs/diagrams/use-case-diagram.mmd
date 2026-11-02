@@ -20,6 +20,7 @@ flowchart LR
         UC11(["UC-11 Change student status"])
         UC12(["UC-12 Export students to CSV"])
         UC13(["UC-13 Print student profile"])
+        UC14(["UC-14 Create first administrator (first-time setup)"])
         UCV(["Validate student data"])
     end
 
@@ -36,6 +37,7 @@ flowchart LR
     Admin --- UC11
     Admin --- UC12
     Admin --- UC13
+    Admin -. "first start only" .- UC14
 
     UC1 -. "include" .-> UCV
     UC8 -. "include" .-> UCV

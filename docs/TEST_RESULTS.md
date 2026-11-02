@@ -7,10 +7,13 @@ listed separately in [§6 Pending tests](#6-pending-tests) and are **not** count
 
 | Test type | Executed | Passed | Failed | Pending | Evidence |
 |---|---|---|---|---|---|
-| Unit tests (JUnit 5) | 28 | 28 | 0 | 0 | §3.1 |
-| Integration tests (JUnit 5 + MySQL) | 15 | 15 | 0 | 0 | §3.2 |
-| HTTP functional checks (`functional-test.sh`) | 67 | 67 | 0 | 0 | §3.3 |
-| Test cases in [TEST_CASES.md](TEST_CASES.md) (80 in total) | 73 | 73 | 0 | 7 | TEST_CASES.md |
+| Unit tests (JUnit 5) | 34 | 34 | 0 | 0 | §8 |
+| Integration tests (JUnit 5 + MySQL) | 15 | 15 | 0 | 0 | §8 |
+| HTTP functional checks (`functional-test.sh`) | 69 | 69 | 0 | 0 | §8 |
+| Test cases in [TEST_CASES.md](TEST_CASES.md) (89 in total) | 81 | 81 | 0 | 8 | TEST_CASES.md |
+
+Sections 3–7 record the earlier runs (at that time 28 unit tests and 67 HTTP checks). Section 8
+records the latest run, after the first-time setup page, database hints and start scripts were added.
 
 Final verification run (clean build, fresh deployment): see [§7](#7-final-verification-run).
 
@@ -239,3 +242,40 @@ Performed on 02 November 2026 after all code and documentation were finished, fo
 
 **Verdict:** every executed test passes on a completely fresh setup. The pending items in §6 still
 need to be done on your own laptop.
+
+## 8. Re-verification after adding the one-click start and first-time setup page
+
+Date: 02 November 2026. Changes tested: Maven Wrapper (`mvnw`), Tomcat 9 run by the Cargo plugin,
+`start.sh` / `start.bat`, first-time setup page `/setup`, beginner-friendly database hints.
+
+1. **A clean copy of the project** with no `db.properties`, and a **brand-new database** created by
+   running `schema.sql` and `sample_data.sql` (as you would in MySQL Workbench) → 16 students, 0 admins.
+2. **`./start.sh`** asked for the MySQL username and password, saved `db.properties`, built the
+   project, started Tomcat 9 and printed `READY: http://localhost:8080/student-registration/`.
+3. **First-time setup** in a real browser: `/login` → redirected to `/setup` → admin created →
+   "Administrator account created. Please sign in." → login → dashboard. Weak password, mismatched
+   passwords and an invalid username were rejected. Afterwards `/setup` redirected to `/login`, and a
+   POST trying to create a second admin was refused (admin count stayed 1).
+4. **Database hint:** with MySQL stopped, the login page said "Cannot reach the MySQL server on
+   localhost:3306. Make sure MySQL is running (…)"; after starting MySQL the page worked again.
+5. **Ctrl+C** stopped the application within 5 seconds with no Tomcat process left.
+6. **Automated tests** — `mvn test -Dintegration=true`:
+   ```
+   [INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.model.StudentTest
+   [INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.ValidationUtilTest
+   [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.DBConnectionTest
+   [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.PasswordUtilTest
+   [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.CsvUtilTest
+   [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.dao.StudentDAOIntegrationTest
+   [INFO] Tests run: 49, Failures: 0, Errors: 0, Skipped: 0
+   [INFO] BUILD SUCCESS
+   ```
+   `functional-test.sh` against the instance started by `start.sh` (last lines):
+   ```
+     PASS  TC-AUTH-06b Old session cannot open the dashboard after logout
+   
+   Result: 69 passed, 0 failed
+   ```
+7. **Not executed:** `start.bat` and the PowerShell helper scripts (no Windows in the development
+   environment) — listed as TC-ENV-06 (pending). If they fail on your PC, use the manual steps in
+   [START_HERE.md](START_HERE.md#if-something-goes-wrong).

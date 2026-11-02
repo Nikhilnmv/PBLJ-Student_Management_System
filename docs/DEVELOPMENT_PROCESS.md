@@ -70,6 +70,7 @@ Each increment ended with a build, tests, a commit and a push to GitHub. The Git
 | 12 | Automated tests | `src/test`, `scripts/functional-test.sh` | *Add unit, integration and functional tests* |
 | 13 | Diagrams and documentation | `docs/` | *Add UML, ER, DFD and architecture diagrams* and documentation commits |
 | 14 | Final verification: fresh clone + fresh database, all tests, responsive fixes | `students.jsp`, `dashboard.jsp`, sidebar, `app.css`, test docs | *Improve responsive layout of admin tables*, *Add README screenshots and final verification results* |
+| 15 | Easier local running: Maven Wrapper, Cargo-managed Tomcat, start scripts, first-time setup page, database hints | `start.bat`, `start.sh`, `SetupServlet`, `DBConnection.explain` | *Add one-click start and first-time setup page* |
 
 Practices followed:
 - Meaningful names, comments on important logic, short methods.
@@ -81,7 +82,7 @@ Practices followed:
 Four levels (details in [TEST_PLAN.md](TEST_PLAN.md)):
 1. **Unit tests** (JUnit 5) — validation, hashing, CSV, model helpers.
 2. **Integration tests** — DAO methods against MySQL, including constraints and SQL injection.
-3. **Functional tests** — 67 automated HTTP checks of the deployed application.
+3. **Functional tests** — 69 automated HTTP checks of the deployed application.
 4. **Manual/browser tests** — UI behaviour, mobile layout, print, database outage, performance.
 
 ## 8. Validation

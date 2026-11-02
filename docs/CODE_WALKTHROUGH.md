@@ -120,6 +120,9 @@ and `src/main/webapp/` for web files.
   environment variable first, otherwise `db.properties` from the classpath.
 - `getConnection()` → `DriverManager.getConnection(URL, USER, PASSWORD)`; throws a clear
   `SQLException("Database is not configured…")` if no settings were found.
+- `explain(SQLException e)` → turns a database error into a beginner-friendly hint using MySQL's
+  error code (1045 wrong password, 1049 no database, 1146 no tables) or SQL state `08…` (MySQL not
+  running). Shown on the login and setup pages.
 - Private constructor: nobody needs a `DBConnection` object; all members are `static`.
 
 ### `ValidationUtil.java`
@@ -162,7 +165,9 @@ and `src/main/webapp/` for web files.
   checks strength, hashes it, then `createAdmin` or `updatePassword`.
 - Uses `System.console().readPassword()` so the password is hidden in a real terminal; falls back to
   a `BufferedReader` in IDE consoles. Clears the password array with `Arrays.fill(password, ' ')`.
-- Run with `mvn compile exec:java` (configured in `pom.xml`).
+- Run with `./mvnw compile exec:java` (macOS) or `mvnw.cmd compile exec:java` (Windows).
+- The browser-based `/setup` page (`SetupServlet`) does the same for the **first** admin; this tool is
+  still useful to **reset a forgotten password**.
 
 ---
 
@@ -215,11 +220,19 @@ Shared by Register, Add, Edit, List and Export servlets:
 - Takes `registeredStudent` from the session, removes it, forwards to `registration-success.jsp`.
   If missing (direct visit or refresh), redirects to `/register`.
 
+### `SetupServlet.java` — `/setup` (first-time setup)
+- Works **only while the `admin` table is empty** (`adminDAO.countAdmins() == 0`); otherwise every
+  GET or POST is redirected to `/login`, so nobody can use it to add extra admins.
+- `doGet` shows `setup.jsp`; if the database can't be reached it shows `DBConnection.explain(e)`.
+- `doPost` checks the username (`ValidationUtil.isValidUsername`), password strength and that both
+  passwords match, then `createAdmin(username, PasswordUtil.hashPassword(password))` and redirects to
+  `/login?setup=done`.
+
 ### `LoginServlet.java` — `/login`
-- `doGet`: already logged in → dashboard; otherwise `login.jsp`.
+- `doGet`: already logged in → dashboard; no admin exists yet → redirect to `/setup`; otherwise `login.jsp`.
 - `doPost`: empty check → `findByUsername` → `PasswordUtil.checkPassword` → same error message for
   wrong user or wrong password → new session, timeout, admin + CSRF token → redirect dashboard.
-  A `SQLException` shows "The database is not available right now."
+  A `SQLException` shows "Cannot reach the MySQL server on localhost:3306. Make sure MySQL is running …" (DBConnection.explain gives a specific hint)
 
 ### `LogoutServlet.java` — `/admin/logout`
 - `doPost`: `session.invalidate()` → redirect `/login?logout=true`. `doGet`: redirect to dashboard.
@@ -263,7 +276,8 @@ Shared by Register, Add, Edit, List and Export servlets:
 | `index.jsp` | welcome file | hero, "Register" / "Admin Login" buttons, feature cards |
 | `WEB-INF/views/register.jsp` | RegisterServlet | registration form (includes `student-form-fields.jspf`), error summary, info cards |
 | `WEB-INF/views/registration-success.jsp` | RegistrationSuccessServlet | registration ID "ticket", summary, Print button |
-| `WEB-INF/views/login.jsp` | LoginServlet | split screen login; messages for error, logout, login required |
+| `WEB-INF/views/setup.jsp` | SetupServlet | first-time "Create administrator" form; database problem hint |
+| `WEB-INF/views/login.jsp` | LoginServlet | split screen login; messages for error, logout, login required, account created |
 | `WEB-INF/views/error.jsp` | `web.xml` error pages | friendly text for 403/404/405/500 — no technical details |
 | `WEB-INF/views/admin/dashboard.jsp` | DashboardServlet | 4 statistic cards, recent table, department bars |
 | `WEB-INF/views/admin/students.jsp` | StudentListServlet | filter bar, table, delete forms, paging, empty states |
@@ -328,6 +342,8 @@ page body and `${fn:escapeXml(...)}` inside attributes, e.g.
    `registration-success.jsp` shows `SRS-000NN`.
 
 ### 9.2 Admin login flow
+0. Very first time only: `GET /login` finds no admin → redirect `/setup` → the admin account is created
+   (`SetupServlet`) → redirect `/login?setup=done`.
 1. `GET /login` → `LoginServlet.doGet` → `login.jsp`.
 2. `POST /login` → `doPost` → `adminDAO.findByUsername` → `PasswordUtil.checkPassword`.
 3. Wrong → `login.jsp` with "Invalid username or password." **Stop.**

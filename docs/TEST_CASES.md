@@ -53,6 +53,10 @@ sample data loaded. **P2** = P1 + an admin account exists and the tester is logg
 | TC-AUTH-10 | Login page when logged in | P2 | open `/login` | redirect to dashboard | 302 → `/admin/dashboard` | Pass | Script |
 | TC-AUTH-11 | Session timeout | P2 | stay idle for 31 minutes, then click a menu item | Redirect to login | — | Pending | Configured in `web.xml` (`<session-timeout>30`) and `LoginServlet` (`setMaxInactiveInterval(1800)`); needs a 30-minute wait |
 | TC-AUTH-12 | Admin setup tool | MySQL running | `mvn compile exec:java`: weak password `short`, then mismatched passwords, then a valid password; then run again and answer `no` | Weak and mismatched passwords rejected; admin created; hash `$2a$12$…` (60 chars) stored; second run makes no changes | Exactly as expected; `admin` table holds a 60-character `$2a$12$` hash | Pass | Manual |
+| TC-AUTH-13 | Setup page closed once an admin exists | P1 + admin exists | open `/setup` | 302 → `/login` | 302 → `/login` | Pass | Script |
+| TC-AUTH-14 | No extra admin through `/setup` | P1 + admin exists | POST `/setup` with username `intruder` | 302 → `/login`; no new admin | Redirected; `intruder` not created (admin count stayed 1) | Pass | Script + Manual |
+| TC-AUTH-15 | First-time setup page | Fresh database, 0 admins | open `/login`; create admin `admin` with a valid password | Redirect to `/setup`; after saving → `/login?setup=done` "Administrator account created. Please sign in."; login works | Exactly as expected; 60-char `$2a$12$` hash stored; login → dashboard | Pass | Browser |
+| TC-AUTH-16 | Setup page validation | 0 admins | password `short`; passwords that differ; username `a b` | A message under the right field; nothing saved | "Use 8-72 characters…", "The two passwords do not match.", "Use 4-50 letters…"; admin count still 0 | Pass | Manual (curl) |
 
 ## 3. Dashboard (TC-DASH)
 
@@ -108,6 +112,7 @@ sample data loaded. **P2** = P1 + an admin account exists and the tester is logg
 | TC-SEC-11 | Database unavailable | P2 | stop MySQL; open home, register, login, dashboard; restart MySQL | Public pages load; register/dashboard → friendly 500; login → "database is not available"; full recovery after restart without restarting Tomcat | Exactly as expected; errors logged in `localhost.<date>.log`; dashboard 200 again after restart | Pass | Manual |
 | TC-SEC-12 | No secrets in Git | — | `git ls-files`, `git log -p` searched for the DB and admin passwords | Only `db.properties.example`; passwords never committed | As expected (0 occurrences) | Pass | Manual |
 | TC-SEC-13 | Password storage | admin created | `SELECT password_hash FROM admin` | BCrypt hash, never plain text; same password → different hashes | `$2a$12$…`; JUnit confirms random salt | Pass | Manual + JUnit `PasswordUtilTest` |
+| TC-SEC-14 | Helpful database hints | P1 | stop MySQL, open `/login`; start MySQL, reload | Clear hint what to fix; hint gone once MySQL runs | "Cannot reach the MySQL server on localhost:3306. Make sure MySQL is running (…)"; gone after restart | Pass | Manual; JUnit `DBConnectionTest` covers the other hints |
 
 ## 6. Usability, compatibility and performance (TC-UI, TC-PERF, TC-ENV)
 
@@ -121,13 +126,17 @@ sample data loaded. **P2** = P1 + an admin account exists and the tester is logg
 | TC-ENV-02 | Setup on macOS | fresh Mac | follow SETUP_AND_EXECUTION.md | App runs | — | Pending | To be done by the student |
 | TC-ENV-03 | Run from IDE | IntelliJ Ultimate / Eclipse | Tomcat run configuration | App runs from the IDE | — | Pending | To be done by the student |
 | TC-ENV-04 | Data visible in MySQL Workbench | P1 | register a student, refresh the table in Workbench | New row visible | — | Pending | Equivalent check done with the `mysql` command line (TC-REG-01) |
+| TC-ENV-05 | `start.sh` first run | Java 17, MySQL running, schema imported, no `db.properties` | `./start.sh`, answer username and password | `db.properties` created; app builds, starts and prints READY; browser opens | Settings saved; READY printed after 11 s (downloads already cached) | Pass | Manual on Linux; macOS run pending |
+| TC-ENV-06 | `start.bat` first run (Windows) | Windows, Java 17, MySQL running, schema imported | double-click `start.bat` | Same as TC-ENV-05 | — | Pending | Windows not available in the development environment |
+| TC-ENV-07 | Ctrl+C stops the application | started with `./start.sh` | press Ctrl+C | Tomcat stops; port 8080 free | Stopped within 5 s; no Tomcat process left | Pass | Manual on Linux |
 
 ## 7. Automated unit and integration tests (summary)
 
 | ID | Test class | Tests | What it checks | Status |
 |---|---|---|---|---|
-| TC-UNIT-01 | `ValidationUtilTest` | 12 | every validation rule, safe conversions, SQL text rejected | Pass |
+| TC-UNIT-01 | `ValidationUtilTest` | 13 | every validation rule incl. admin usernames, safe conversions, SQL text rejected | Pass |
 | TC-UNIT-02 | `PasswordUtilTest` | 5 | BCrypt format/cost, wrong passwords, random salt, invalid hashes, strength rules | Pass |
 | TC-UNIT-03 | `CsvUtilTest` | 4 | quoting, escaping quotes, formula protection | Pass |
 | TC-UNIT-04 | `StudentTest` | 7 | default status, registration ID, initials, date formatting, age, filter, CSRF tokens | Pass |
-| TC-INT-01 | `StudentDAOIntegrationTest` | 15 | insert/read, UNIQUE (roll, case-insensitive email), CHECK semester, update, status, delete, search, filters, paging, LIKE wildcards, SQL injection, statistics, AdminDAO create/find/reset | Pass |
+| TC-UNIT-05 | `DBConnectionTest` | 5 | beginner-friendly hints for missing settings, wrong password, missing database/tables, stopped server | Pass |
+| TC-INT-01 | `StudentDAOIntegrationTest` | 15 | insert/read, UNIQUE (roll, case-insensitive email), CHECK semester, update, status, delete, search, filters, paging, LIKE wildcards, SQL injection, statistics, AdminDAO count/create/find/reset | Pass |

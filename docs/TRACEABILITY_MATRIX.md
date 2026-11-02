@@ -22,7 +22,7 @@ it ([TEST_CASES.md](TEST_CASES.md)). Status reflects executed tests only.
 | FR-13 | Protect `/admin/*` | `AuthFilter` | TC-AUTH-05, TC-SEC-04 | Verified |
 | FR-14 | New session at login, invalidate at logout | `LoginServlet`, `LogoutServlet` | TC-AUTH-06, TC-AUTH-08, TC-SEC-05 | Verified |
 | FR-15 | 30-minute timeout | `web.xml` `<session-timeout>`, `setMaxInactiveInterval` | TC-AUTH-11 | **Pending** (configuration verified) |
-| FR-16 | Admin setup tool, no plain-text password | `AdminSetup`, `AdminDAO.createAdmin/updatePassword` | TC-AUTH-12, TC-SEC-12 | Verified |
+| FR-16 | First admin via setup page / tool, no plain-text password | `SetupServlet`, `setup.jsp`, `AdminSetup`, `AdminDAO.countAdmins/createAdmin/updatePassword` | TC-AUTH-12 – TC-AUTH-16, TC-SEC-12 | Verified |
 | FR-17 | Dashboard counts from SQL | `DashboardServlet`, `StudentDAO.countAllStudents/countStudentsByStatus/countDepartments` | TC-DASH-01, TC-DASH-02, TC-INT-01 | Verified |
 | FR-18 | Five recent registrations | `StudentDAO.getRecentStudents`, `dashboard.jsp` | TC-DASH-04 | Verified |
 | FR-19 | Students per department | `StudentDAO.getDepartmentCounts` | TC-DASH-03, TC-INT-01 | Verified |

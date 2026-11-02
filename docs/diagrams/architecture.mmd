@@ -9,7 +9,7 @@ flowchart LR
     subgraph Server["Apache Tomcat 9 (Java 17)"]
         direction TB
         F["AuthFilter<br/>(protects /admin/*)"]
-        C["Controllers<br/>12 Servlets"]
+        C["Controllers<br/>13 Servlets"]
         V["Views<br/>JSP + JSTL"]
         D["DAO Layer<br/>StudentDAO, AdminDAO"]
         U["Utilities<br/>DBConnection, ValidationUtil,<br/>PasswordUtil, CsrfUtil, CsvUtil"]

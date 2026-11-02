@@ -3,6 +3,9 @@
 A web-based student registration and management system built with **Java Servlets, JSP, JDBC and
 MySQL** on **Apache Tomcat 9**. Academic minor project for *Project Based Learning Using Java (PBLJ)*.
 
+> **New here? Read [docs/START_HERE.md](docs/START_HERE.md)** — what the project is, what is done,
+> and how to run it on your laptop with MySQL Workbench in a few steps.
+
 Students register online and instantly receive a registration ID. Administrators log in to a secure
 panel to see live statistics and to search, filter, view, add, edit, delete, activate/deactivate,
 print and export student records.
@@ -20,7 +23,7 @@ print and export student records.
 - Automatically generated registration ID (e.g. `SRS-00017`) and printable confirmation
 
 **Administrators**
-- Secure login (BCrypt-hashed passwords, session-based, 30-minute timeout, logout)
+- Secure login (BCrypt-hashed passwords, session-based, 30-minute timeout, logout); first-time setup page creates the first admin
 - Dashboard: total, active, inactive, departments, recent registrations, students per department — all from live SQL
 - Student list with paging, search (name / roll number / email) and filters (department / semester / status)
 - Profile, add, edit, delete (with confirmation), Active/Inactive status, CSV export, print-friendly profile
@@ -58,51 +61,31 @@ header · friendly error pages · no secrets in Git.
 
 ## Quick start
 
-Full step-by-step instructions for Windows and macOS: **[docs/SETUP_AND_EXECUTION.md](docs/SETUP_AND_EXECUTION.md)**.
+Step-by-step with pictures: **[docs/START_HERE.md](docs/START_HERE.md)**. In short:
 
-Prerequisites: JDK 17, Maven 3.8+, MySQL 8.0, Apache Tomcat **9** (not 10/11), Git.
+1. Install **Java 17** and **MySQL Server 8** (MySQL Workbench is optional but handy).
+   Maven and Tomcat are **not** needed — they are downloaded automatically.
+2. Download this repository (Code → Download ZIP) and extract it.
+3. In MySQL Workbench run `database/schema.sql`, then `database/sample_data.sql`.
+4. Start the app: **Windows** double-click `start.bat` · **macOS/Linux** run `./start.sh`.
+   The first time it asks for your MySQL username and password (stored only in the git-ignored
+   `src/main/resources/db.properties`), then opens <http://localhost:8080/student-registration/>.
+5. Click **Admin Login** — the first time you are asked to create the administrator account.
 
-```bash
-git clone git@github.com:Nikhilnmv/PBLJ-Laxita.git
-cd PBLJ-Laxita
-```
-
-1. **Create the database** (asks for the MySQL root password):
-   ```bash
-   mysql -u root -p < database/schema.sql
-   mysql -u root -p < database/sample_data.sql
-   ```
-   Then create an application user (in the `mysql` client):
-   ```sql
-   CREATE USER 'srs_app'@'localhost' IDENTIFIED BY 'Choose-A-Strong-Password1';
-   GRANT SELECT, INSERT, UPDATE, DELETE ON student_registration_db.* TO 'srs_app'@'localhost';
-   ```
-2. **Configure the connection** — copy the example file and put your password in the copy:
-   ```bash
-   cp src/main/resources/db.properties.example src/main/resources/db.properties
-   ```
-   (`db.properties` is git-ignored. Environment variables `DB_URL`, `DB_USER`, `DB_PASSWORD` also work.)
-3. **Create the administrator account** (password is hashed with BCrypt; nothing is stored in Git):
-   ```bash
-   mvn compile exec:java
-   ```
-4. **Build:**
-   ```bash
-   mvn clean package
-   ```
-5. **Deploy:** copy `target/student-registration.war` to `<TOMCAT>/webapps/`, start Tomcat
-   (`bin/startup.sh` or `bin\startup.bat`) and open **<http://localhost:8080/student-registration/>**.
+Other ways to run it (Tomcat installed by hand, IntelliJ, Eclipse): [docs/SETUP_AND_EXECUTION.md](docs/SETUP_AND_EXECUTION.md).
 
 ## Project structure
 
 ```
-├── pom.xml                         Maven build (dependencies, Java 17, WAR)
+├── start.bat / start.sh            one-click start (Windows / macOS, Linux)
+├── mvnw, mvnw.cmd                  Maven Wrapper (downloads Maven automatically)
+├── pom.xml                         Maven build (dependencies, Java 17, WAR, Tomcat via Cargo)
 ├── database/                       schema.sql, sample_data.sql (fictional data)
-├── scripts/functional-test.sh      67 automated HTTP checks (curl)
+├── scripts/functional-test.sh      69 automated HTTP checks (curl)
 ├── src/main/java/com/student/
 │   ├── model/                      Student, Admin, StudentFilter            (Model)
 │   ├── dao/                        StudentDAO, AdminDAO, DuplicateStudentException (DAO)
-│   ├── servlet/                    12 servlets + StudentRequestHelper       (Controller)
+│   ├── servlet/                    13 servlets + StudentRequestHelper       (Controller)
 │   ├── filter/                     AuthFilter (protects /admin/*)
 │   ├── listener/                   AppContextListener (start-up DB check)
 │   └── util/                       DBConnection, ValidationUtil, PasswordUtil, CsrfUtil,
@@ -118,9 +101,9 @@ cd PBLJ-Laxita
 ## Testing
 
 ```bash
-mvn test                              # 28 unit tests
-mvn test -Dintegration=true           # + 15 integration tests against MySQL
-ADMIN_PASSWORD='your-admin-password' ./scripts/functional-test.sh   # 67 HTTP checks (app must be running)
+./mvnw test                           # 34 unit tests (Windows: mvnw.cmd test)
+./mvnw test -Dintegration=true        # + 15 integration tests against MySQL
+ADMIN_PASSWORD='your-admin-password' ./scripts/functional-test.sh   # 69 HTTP checks (app must be running)
 ```
 Results, including performance with 10,000 students: [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md).
 
@@ -128,7 +111,8 @@ Results, including performance with 10,000 students: [docs/TEST_RESULTS.md](docs
 
 | Document | Contents |
 |---|---|
-| [SETUP_AND_EXECUTION](docs/SETUP_AND_EXECUTION.md) | Installation, configuration, running, troubleshooting |
+| [START_HERE](docs/START_HERE.md) | **Begin here:** what is done, run it in a few steps, check it works |
+| [SETUP_AND_EXECUTION](docs/SETUP_AND_EXECUTION.md) | Detailed installation, other ways to run, troubleshooting |
 | [PROJECT_OVERVIEW](docs/PROJECT_OVERVIEW.md) | Problem, objectives, scope, features, limitations, future scope |
 | [COMPLETE_PROJECT_GUIDE](docs/COMPLETE_PROJECT_GUIDE.md) | **Main learning guide** — how everything works |
 | [CODE_WALKTHROUGH](docs/CODE_WALKTHROUGH.md) | File-by-file explanation and traced flows |

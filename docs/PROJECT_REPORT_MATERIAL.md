@@ -28,7 +28,7 @@ content collected here. Fill in the bracketed placeholders (`[ … ]`) with your
 > both by server-side validation and by database constraints (primary key, unique, check). Security
 > measures include parameterised SQL queries against injection, output escaping against cross-site
 > scripting, session-based access control with a servlet filter, CSRF tokens and POST-only data changes.
-> The system was verified with 28 unit tests, 15 database integration tests and 67 automated HTTP
+> The system was verified with 34 unit tests, 15 database integration tests and 69 automated HTTP
 > functional checks, all passing, and responded in under 50 ms per page with 10,000 student records.
 > The result is a simple, secure and maintainable application suitable for a college office.
 
@@ -108,7 +108,7 @@ Windows/macOS/Linux, JDK 17, Maven 3.8+, MySQL 8.0, Tomcat 9, modern browser.
 The system is a three-tier web application: the browser (presentation tier), Apache Tomcat running the
 Java application (application tier) and MySQL (data tier). Inside the application tier the MVC pattern
 separates **models** (`Student`, `Admin`, `StudentFilter`), **views** (JSP pages) and **controllers**
-(twelve servlets). A **DAO layer** (`StudentDAO`, `AdminDAO`) encapsulates all SQL. A **servlet filter**
+(thirteen servlets). A **DAO layer** (`StudentDAO`, `AdminDAO`) encapsulates all SQL. A **servlet filter**
 (`AuthFilter`) protects administrative URLs, and utility classes provide database connections,
 validation, password hashing, CSRF tokens and CSV formatting.
 Figures: `diagrams/exports/architecture.png`, `mvc-architecture.png`, `component-diagram.png`,
@@ -165,9 +165,9 @@ requirements ([TRACEABILITY_MATRIX.md](TRACEABILITY_MATRIX.md)).
 ## 19. Actual testing results
 From [TEST_RESULTS.md](TEST_RESULTS.md) (executed 02 Nov 2026 on Ubuntu 24.04, Java 17, Tomcat 9.0.111,
 MySQL 8.0.46):
-- Unit tests: 28/28 passed. Integration tests: 15/15 passed. HTTP functional checks: 67/67 passed.
-- Documented test cases: 80 — 73 executed and passed, 0 failed, 7 pending (own-laptop setup, IDE run,
-  other browsers, Workbench view, 30-minute timeout, empty-database dashboard).
+- Unit tests: 34/34 passed. Integration tests: 15/15 passed. HTTP functional checks: 69/69 passed.
+- Documented test cases: 89 — 81 executed and passed, 0 failed, 8 pending (own-laptop setup incl.
+  `start.bat` on Windows, IDE run, other browsers, Workbench view, 30-minute timeout, empty-database dashboard).
 - Performance with 10,017 students: dashboard 38 ms, list 18 ms, search ≈ 41 ms, filters 17 ms; CSV
   export of all rows 0.35 s.
 - Ten defects found and fixed during testing and final verification.

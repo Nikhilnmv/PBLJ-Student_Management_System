@@ -51,7 +51,7 @@ flowchart LR
     subgraph Server["Apache Tomcat 9 (Java 17)"]
         direction TB
         F["AuthFilter<br/>(protects /admin/*)"]
-        C["Controllers<br/>12 Servlets"]
+        C["Controllers<br/>13 Servlets"]
         V["Views<br/>JSP + JSTL"]
         D["DAO Layer<br/>StudentDAO, AdminDAO"]
         U["Utilities<br/>DBConnection, ValidationUtil,<br/>PasswordUtil, CsrfUtil, CsvUtil"]
@@ -138,7 +138,7 @@ flowchart LR
             LIS["AppContextListener"]
             AF["AuthFilter"]
             HSF["HttpHeaderSecurityFilter<br/>(Tomcat built-in)"]
-            PUB["Public servlets<br/>RegisterServlet<br/>RegistrationSuccessServlet<br/>LoginServlet"]
+            PUB["Public servlets<br/>RegisterServlet<br/>RegistrationSuccessServlet<br/>LoginServlet<br/>SetupServlet (first-time setup)"]
             ADM["Admin servlets<br/>DashboardServlet, StudentListServlet,<br/>StudentProfileServlet, AddStudentServlet,<br/>EditStudentServlet, DeleteStudentServlet,<br/>StudentStatusServlet, ExportStudentsServlet,<br/>LogoutServlet"]
             HLP["StudentRequestHelper"]
             JSP["JSP views + JSPF fragments"]
@@ -276,6 +276,7 @@ flowchart LR
         UC11(["UC-11 Change student status"])
         UC12(["UC-12 Export students to CSV"])
         UC13(["UC-13 Print student profile"])
+        UC14(["UC-14 Create first administrator (first-time setup)"])
         UCV(["Validate student data"])
     end
 
@@ -292,6 +293,7 @@ flowchart LR
     Admin --- UC11
     Admin --- UC12
     Admin --- UC13
+    Admin -. "first start only" .- UC14
 
     UC1 -. "include" .-> UCV
     UC8 -. "include" .-> UCV
@@ -440,7 +442,7 @@ classDiagram
     HttpServlet <|-- LoginServlet
     HttpServlet <|-- StudentListServlet
     HttpServlet <|-- EditStudentServlet
-    note for HttpServlet "8 more servlets extend HttpServlet in the same way:\nRegistrationSuccessServlet, LogoutServlet,\nDashboardServlet, StudentProfileServlet,\nAddStudentServlet, DeleteStudentServlet,\nStudentStatusServlet, ExportStudentsServlet"
+    note for HttpServlet "9 more servlets extend HttpServlet in the same way:\nRegistrationSuccessServlet, SetupServlet, LogoutServlet,\nDashboardServlet, StudentProfileServlet,\nAddStudentServlet, DeleteStudentServlet,\nStudentStatusServlet, ExportStudentsServlet"
 
     class StudentRequestHelper {
         <<helper>>

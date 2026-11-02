@@ -124,7 +124,7 @@ Browser  ⇄  Apache Tomcat 9 (Servlets + JSP)  ⇄  JDBC  ⇄  MySQL 8
 | FR-13 | The system shall protect every URL under `/admin/` and redirect users who are not logged in to the login page. |
 | FR-14 | The system shall create a new session on successful login and end it on logout (session invalidation). |
 | FR-15 | The system shall end an administrator session after 30 minutes of inactivity. |
-| FR-16 | The system shall provide a command-line setup tool to create the first administrator (and reset a password) without storing a plain-text password in any file. |
+| FR-16 | The system shall let the first administrator be created through a first-time setup page that works only while no administrator exists, and through a command-line tool that can also reset a password, without storing a plain-text password in any file. |
 
 ### 3.3 Dashboard
 

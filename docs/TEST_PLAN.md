@@ -24,7 +24,8 @@ professional, older browsers (Internet Explorer), deployment on a public server.
 | Browser / UI tests | Client-side validation, double-submit guard, confirm dialog, mobile layout, print layout | Real browser (Chromium, automated during development) + manual | Manual steps in TEST_CASES | Partly |
 | Error-handling tests | Behaviour with MySQL stopped and restarted | Manual (stop/start MySQL) | TEST_CASES TC-SEC-11 | No |
 | Performance check | Response times with 10,000 students | curl timing + `EXPLAIN` | TEST_CASES TC-PERF-01 | No |
-| Setup tool tests | `AdminSetup` create / reject weak password / mismatch / existing user | Terminal | `mvn compile exec:java` | No |
+| Setup tests | First-time setup page (`/setup`) and `AdminSetup` tool: create, reject weak password / mismatch, page closed once an admin exists | Browser, curl script, terminal | `/setup`; `./mvnw compile exec:java` | Partly |
+| Start-up tests | `start.sh` / `start.bat`: first-run questions, build, start, browser opens, Ctrl+C stops | Terminal | `./start.sh` / `start.bat` | No |
 
 Why JUnit only for code that needs no server: utility and validation logic can be tested quickly
 and repeatedly in isolation. Code that depends on MySQL or Tomcat is covered by the integration
@@ -73,10 +74,10 @@ Defects found during testing are fixed, the related test is re-run, and the defe
 
 ## 10. How to re-run everything on your laptop
 ```bash
-mvn clean package                                   # build + 28 unit tests
+mvn clean package                                   # build + 34 unit tests
 mvn test -Dintegration=true                         # + 15 MySQL integration tests
 # deploy target/student-registration.war to Tomcat 9 and start it, then:
-ADMIN_PASSWORD='your-admin-password' ./scripts/functional-test.sh   # 67 HTTP checks
+ADMIN_PASSWORD='your-admin-password' ./scripts/functional-test.sh   # 69 HTTP checks
 ```
 Then follow the manual cases marked **Manual** in [TEST_CASES.md](TEST_CASES.md) and fill in the
 "Actual result" column for your own machine.

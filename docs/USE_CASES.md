@@ -38,6 +38,7 @@ flowchart LR
         UC11(["UC-11 Change student status"])
         UC12(["UC-12 Export students to CSV"])
         UC13(["UC-13 Print student profile"])
+        UC14(["UC-14 Create first administrator (first-time setup)"])
         UCV(["Validate student data"])
     end
 
@@ -54,6 +55,7 @@ flowchart LR
     Admin --- UC11
     Admin --- UC12
     Admin --- UC13
+    Admin -. "first start only" .- UC14
 
     UC1 -. "include" .-> UCV
     UC8 -. "include" .-> UCV
@@ -79,6 +81,7 @@ _Source: [`diagrams/use-case-diagram.mmd`](diagrams/use-case-diagram.mmd) · PNG
 | UC-11 | Change student status | Administrator | `StudentStatusServlet` |
 | UC-12 | Export students to CSV | Administrator | `ExportStudentsServlet` |
 | UC-13 | Print student profile | Administrator | `student-profile.jsp` + browser print |
+| UC-14 | Create the first administrator | Installer (first user) | `SetupServlet`, `setup.jsp` |
 
 ## 4. Use case descriptions
 
@@ -120,7 +123,7 @@ _Source: [`diagrams/use-case-diagram.mmd`](diagrams/use-case-diagram.mmd) · PNG
 - **Alternative flows:**
   - 1a. Empty fields → "Please enter both username and password."
   - 2a. Unknown username or wrong password → "Invalid username or password." (same message for both).
-  - 2b. Database unavailable → "The database is not available right now."
+  - 2b. Database unavailable → "Cannot reach the MySQL server on localhost:3306. Make sure MySQL is running …" (DBConnection.explain gives a specific hint)
   - 1b. Admin is already logged in and opens `/login` → redirected straight to the dashboard.
 - **Postconditions:** An authenticated session exists.
 
@@ -172,3 +175,14 @@ _Source: [`diagrams/use-case-diagram.mmd`](diagrams/use-case-diagram.mmd) · PNG
 
 ### UC-13 Print student profile
 - **Main flow:** Admin clicks **Print** on a profile (or a student on the success page) → browser print dialog with a clean layout (no menus or buttons).
+
+### UC-14 Create the first administrator (first-time setup)
+- **Actor:** the person installing the system.
+- **Preconditions:** the `admin` table is empty.
+- **Main flow:** open the application's login page → redirected to `/setup` → enter username, password
+  and confirmation → system validates, stores a BCrypt hash, redirects to the login page with
+  "Administrator account created. Please sign in."
+- **Alternative flows:** invalid username / weak password / passwords differ → messages under the
+  fields; database problem → hint such as "Make sure MySQL is running"; an admin already exists →
+  `/setup` redirects to `/login` (the page is closed for good).
+- **Postconditions:** one row in `admin`.

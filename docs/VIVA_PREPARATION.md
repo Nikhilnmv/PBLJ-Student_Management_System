@@ -70,7 +70,7 @@ laptop.
 > **Security.** PreparedStatement against SQL injection, server-side validation, BCrypt, session
 > filter, CSRF tokens on every admin form, output escaping against XSS, and no passwords in GitHub.
 >
-> **Testing.** I wrote 28 JUnit unit tests, 15 integration tests against MySQL and a script with 67
+> **Testing.** I wrote 34 JUnit unit tests, 15 integration tests against MySQL and a script with 69
 > automated HTTP checks; all pass. I also tested it with 10,000 students — every page responded in
 > under 50 milliseconds.
 >
@@ -486,7 +486,7 @@ email is also converted to lower case.
 **What happens if MySQL is unavailable?**
 At start-up `AppContextListener` logs a warning. Pages that don't need the database still open. A
 registration or dashboard request throws `SQLException`, which is logged and turned into the friendly
-"Something went wrong" page — no stack trace. Login shows "The database is not available right now."
+"Something went wrong" page — no stack trace. Login explains the likely cause, e.g. "Cannot reach the MySQL server … Make sure MySQL is running."
 When MySQL starts again, the app works without restarting Tomcat, because every request opens a new
 connection. (Tested: TC-SEC-11.)
 
@@ -526,8 +526,9 @@ GET requests can be triggered by links, prefetching or crawlers and must not cha
 `DeleteStudentServlet` only implements `doPost`, so GET gets 405. A confirmation dialog appears first.
 
 **Where is the admin password stored?**
-Only as a BCrypt hash in `admin.password_hash`. The admin is created with `AdminSetup`
-(`mvn compile exec:java`); there is no password in any file in the repository.
+Only as a BCrypt hash in `admin.password_hash`. The first admin is created on the first-time setup
+page (`/setup`, which closes itself once an admin exists) or with the `AdminSetup` command-line tool;
+there is no password in any file in the repository.
 
 **What does `AppContextListener` do?**
 On start-up it tests the database connection and logs the result; on shutdown it deregisters the JDBC
@@ -580,7 +581,7 @@ So month names and AM/PM are the same on every computer regardless of its langua
 |---|---|
 | Page says "Something went wrong" | MySQL stopped — start it; no need to restart Tomcat. Turn it into a feature: "this shows graceful error handling". |
 | 404 on every page | Tomcat not running or WAR not deployed — run `startup.bat`/`startup.sh`, wait 10 s. |
-| "Invalid username or password" with the right password | Caps Lock; or reset with `mvn compile exec:java` (answer `yes`). |
+| "Invalid username or password" with the right password | Caps Lock; or reset with `mvnw.cmd compile exec:java` / `./mvnw compile exec:java` (answer `yes`). |
 | "Roll number already registered" for your demo student | You registered it in rehearsal — use another roll number or delete it first. |
 | Workbench doesn't show the new row | Click the refresh icon or re-run the SELECT. |
 
@@ -676,9 +677,9 @@ On submit, `AuthFilter` finds no session and redirects to the login page; nothin
 logs in again and repeats the edit.
 
 **How did you test your project?**
-28 JUnit unit tests, 15 integration tests against real MySQL (constraints, CRUD, SQL injection), a script
-with 67 automated HTTP checks, and manual/browser tests for UI, database outage and performance. 73 of
-80 documented test cases are executed and passed; 7 that need my own laptop or a 30-minute wait are
+34 JUnit unit tests, 15 integration tests against real MySQL (constraints, CRUD, SQL injection), a script
+with 69 automated HTTP checks, and manual/browser tests for UI, database outage and performance. 81 of
+89 documented test cases are executed and passed; 8 that need my own laptop or a 30-minute wait are
 marked pending.
 
 ---
@@ -690,7 +691,7 @@ marked pending.
 2. **Tech stack?** Java 17, Servlets, JSP/JSTL, JDBC, MySQL 8, Tomcat 9, Maven, Bootstrap 5.
 3. **Architecture?** MVC + DAO, three-tier (browser, Tomcat, MySQL).
 4. **Model classes?** `Student`, `Admin`, `StudentFilter`.
-5. **Controllers?** 12 servlets, e.g. `RegisterServlet`, `LoginServlet`, `StudentListServlet`.
+5. **Controllers?** 13 servlets, e.g. `RegisterServlet`, `LoginServlet`, `StudentListServlet`.
 6. **Views?** JSPs in `WEB-INF/views` with JSTL and EL.
 7. **DAO?** `StudentDAO`, `AdminDAO` — all SQL lives there.
 8. **How is the DB connected?** `DBConnection` → `DriverManager.getConnection(url, user, password)`.
@@ -712,8 +713,8 @@ marked pending.
 24. **Delete safety?** POST only, CSRF token, confirmation dialog, `WHERE student_id = ?`.
 25. **CSV export?** `ExportStudentsServlet` writes `text/csv` with `Content-Disposition: attachment`.
 26. **Error handling?** Log + `ServletException` → `error.jsp`; no stack traces.
-27. **First admin?** `AdminSetup` tool: `mvn compile exec:java`.
-28. **Tests?** 28 unit, 15 integration, 67 HTTP checks — all pass.
+27. **First admin?** First-time setup page `/setup` (only while no admin exists) or the `AdminSetup` tool.
+28. **Tests?** 34 unit, 15 integration, 69 HTTP checks — all pass.
 29. **Performance?** < 50 ms per page with 10,000 students.
 30. **Limitations?** One admin role, no student login, no email verification, no lockout, no pool.
 

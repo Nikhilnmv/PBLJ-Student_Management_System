@@ -1,5 +1,10 @@
 # Setup and Execution Guide
 
+> **Easiest way:** follow **[START_HERE.md](START_HERE.md)** — install Java 17 and MySQL, run the two
+> SQL scripts in Workbench, then double-click `start.bat` (Windows) or run `./start.sh` (macOS/Linux).
+> Maven and Tomcat are downloaded automatically and the first admin is created in the browser.
+> This page is the **detailed / manual** version (installed Tomcat, IntelliJ, Eclipse, troubleshooting).
+
 This guide takes you from a fresh laptop to a running Student Registration System.
 Follow the steps **in order**. Commands are given for **Windows** and **macOS**
 (Linux is the same as macOS except for installation).
@@ -205,24 +210,21 @@ it must not appear in the list of changed files.
 ## 5. Create the administrator account
 
 The repository contains **no admin password** (it would be visible to anyone on GitHub).
-Create your own admin with the setup tool:
 
+**Option A — in the browser (easiest).** Start the application (step 7), click **Admin Login**. While
+no administrator exists, you are taken to a **first-time setup page**: choose a username and a password
+(8–72 characters, at least one letter and one digit). Only a **BCrypt hash** is stored. The page closes
+itself as soon as an admin exists.
+
+**Option B — command line** (also resets a forgotten password):
 ```bash
-mvn compile exec:java
+./mvnw compile exec:java
 ```
-
-It asks for a username and a password (8–72 characters with at least one letter and one digit),
-asks you to confirm the password, stores a **BCrypt hash** in the `admin` table, and prints
-`SUCCESS: administrator 'admin' created.` In a normal terminal the password is not shown while
-you type.
-
-From an IDE instead: open `src/main/java/com/student/util/AdminSetup.java` and click **Run** next to
-`main`. (IDE consoles cannot hide input, so the password is visible there.)
-
-Forgot the password? Run the tool again with the same username and answer `yes` to
-"Reset its password?".
-
----
+(Windows: `mvnw.cmd compile exec:java`; or `mvn compile exec:java` if Maven is installed.)
+It asks for a username and a password twice and prints `SUCCESS: administrator 'admin' created.`
+In a normal terminal the password is not shown while you type. To reset a password, run it again with
+the same username and answer `yes`. From an IDE: run `src/main/java/com/student/util/AdminSetup.java`
+(IDE consoles cannot hide input, so the password is visible there).
 
 ## 6. Build the application
 
@@ -238,6 +240,15 @@ creates **`target/student-registration.war`**. The last lines must say `BUILD SU
 ---
 
 ## 7. Run on Tomcat
+
+### Option 0 – let Maven run Tomcat for you (no Tomcat installation)
+```bash
+./mvnw package cargo:run
+```
+(Windows: `mvnw.cmd package cargo:run`.) Maven downloads Tomcat 9, deploys the WAR and starts it. When
+you see `Tomcat 9.0.111 started on port [8080]`, open <http://localhost:8080/student-registration/>.
+Press **Ctrl+C** to stop. This is exactly what `start.bat` / `start.sh` do.
+
 
 ### Option A – copy the WAR into Tomcat (works everywhere)
 
@@ -289,8 +300,8 @@ Log in with the admin account you created in step 5.
 ## 9. Run the tests
 
 ```bash
-mvn test                              # 28 unit tests (no database needed)
-mvn test -Dintegration=true           # + 15 integration tests against your MySQL database
+./mvnw test                           # 34 unit tests (no database needed)
+./mvnw test -Dintegration=true        # + 15 integration tests against your MySQL database
 ```
 
 With the application running on Tomcat, the automated HTTP tests (Git Bash on Windows, Terminal on macOS):

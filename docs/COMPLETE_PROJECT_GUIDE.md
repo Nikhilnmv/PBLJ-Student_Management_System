@@ -36,6 +36,8 @@ Everything else in the project is a variation of these six steps.
 
 ```
 PBLJ-Laxita/
+├── start.bat / start.sh         one-click start (asks for the MySQL password the first time)
+├── mvnw / mvnw.cmd              Maven Wrapper: downloads Maven automatically
 ├── pom.xml                      Maven build file (libraries + how to build the WAR)
 ├── database/
 │   ├── schema.sql               CREATE DATABASE + CREATE TABLE statements
@@ -44,7 +46,7 @@ PBLJ-Laxita/
 ├── src/main/java/com/student/
 │   ├── model/                   Student, Admin, StudentFilter          (MODEL)
 │   ├── dao/                     StudentDAO, AdminDAO, DuplicateStudentException (DAO)
-│   ├── servlet/                 12 servlets + StudentRequestHelper      (CONTROLLER)
+│   ├── servlet/                 13 servlets + StudentRequestHelper      (CONTROLLER)
 │   ├── filter/                  AuthFilter                              (security)
 │   ├── listener/                AppContextListener                      (start-up check)
 │   └── util/                    DBConnection, ValidationUtil, PasswordUtil, CsrfUtil,
@@ -97,7 +99,10 @@ The dependencies in `pom.xml`:
 | `jbcrypt 0.4` | compile | BCrypt password hashing |
 | `junit-jupiter 5.11.4` | test | Unit testing, only used during `mvn test` |
 
-The `exec-maven-plugin` lets you run the admin setup tool with `mvn compile exec:java`.
+The **Maven Wrapper** (`mvnw` / `mvnw.cmd`) downloads the right Maven version automatically, so
+Maven does not need to be installed. The **Cargo plugin** downloads Apache Tomcat 9 and runs the WAR
+in it (`mvnw package cargo:run`) — this is what `start.bat` / `start.sh` use. The `exec-maven-plugin`
+runs the command-line admin tool (`mvnw compile exec:java`).
 
 ### 2.3 Apache Tomcat 9 — the web server / servlet container
 Tomcat is a Java program that:
@@ -143,12 +148,13 @@ public class StudentProfileServlet extends HttpServlet {
 - `request.setAttribute("student", student)` puts a Java object where the JSP can find it.
 - `forward(...)` passes control to the JSP **inside the server** — the browser's URL does not change.
 
-The 12 servlets and their URLs:
+The 13 servlets and their URLs:
 
 | URL | Servlet | Methods | Access |
 |---|---|---|---|
 | `/register` | `RegisterServlet` | GET form, POST save | public |
 | `/register/success` | `RegistrationSuccessServlet` | GET | public |
+| `/setup` | `SetupServlet` | GET form, POST create first admin (only while no admin exists) | public |
 | `/login` | `LoginServlet` | GET form, POST check | public |
 | `/admin/logout` | `LogoutServlet` | POST (GET just redirects) | admin |
 | `/admin/dashboard`, `/admin` | `DashboardServlet` | GET | admin |

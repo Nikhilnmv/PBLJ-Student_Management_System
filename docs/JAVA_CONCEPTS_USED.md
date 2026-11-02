@@ -98,7 +98,7 @@ this repository, **(5)** an explanation of that code.
 ## 6. Inheritance
 1. **Definition:** A class (*subclass*) `extends` another (*superclass*) and inherits its fields and methods.
 2. **Why:** Reuse existing behaviour and specialise only what is different.
-3. **Where:** (a) all 12 servlets `extends HttpServlet` (an abstract class from the Servlet API); (b) `DuplicateStudentException extends Exception`.
+3. **Where:** (a) all 13 servlets `extends HttpServlet` (an abstract class from the Servlet API); (b) `DuplicateStudentException extends Exception`.
 4. **Code:**
    ```java
    public class RegisterServlet extends HttpServlet { ... }

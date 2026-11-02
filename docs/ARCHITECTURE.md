@@ -29,7 +29,7 @@ flowchart LR
     subgraph Server["Apache Tomcat 9 (Java 17)"]
         direction TB
         F["AuthFilter<br/>(protects /admin/*)"]
-        C["Controllers<br/>12 Servlets"]
+        C["Controllers<br/>13 Servlets"]
         V["Views<br/>JSP + JSTL"]
         D["DAO Layer<br/>StudentDAO, AdminDAO"]
         U["Utilities<br/>DBConnection, ValidationUtil,<br/>PasswordUtil, CsrfUtil, CsvUtil"]
@@ -130,7 +130,7 @@ flowchart LR
             LIS["AppContextListener"]
             AF["AuthFilter"]
             HSF["HttpHeaderSecurityFilter<br/>(Tomcat built-in)"]
-            PUB["Public servlets<br/>RegisterServlet<br/>RegistrationSuccessServlet<br/>LoginServlet"]
+            PUB["Public servlets<br/>RegisterServlet<br/>RegistrationSuccessServlet<br/>LoginServlet<br/>SetupServlet (first-time setup)"]
             ADM["Admin servlets<br/>DashboardServlet, StudentListServlet,<br/>StudentProfileServlet, AddStudentServlet,<br/>EditStudentServlet, DeleteStudentServlet,<br/>StudentStatusServlet, ExportStudentsServlet,<br/>LogoutServlet"]
             HLP["StudentRequestHelper"]
             JSP["JSP views + JSPF fragments"]
@@ -267,6 +267,7 @@ For POST requests that change data, the servlet finishes with `sendRedirect` (HT
 | `/` | GET | (welcome file) | `index.jsp` | no |
 | `/register` | GET, POST | `RegisterServlet` | `register.jsp` / redirect | no |
 | `/register/success` | GET | `RegistrationSuccessServlet` | `registration-success.jsp` | no |
+| `/setup` | GET, POST | `SetupServlet` | `setup.jsp` / redirect (only while no admin exists) | no |
 | `/login` | GET, POST | `LoginServlet` | `login.jsp` / redirect | no |
 | `/admin`, `/admin/dashboard` | GET | `DashboardServlet` | `admin/dashboard.jsp` | yes |
 | `/admin/students` | GET | `StudentListServlet` | `admin/students.jsp` | yes |

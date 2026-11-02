@@ -60,7 +60,7 @@ up). Being able to explain trade-offs is often what examiners look for.
   thousands of students this is not a problem (see performance results in TEST_RESULTS.md).
 
 ## DD-08 One servlet per action (small controllers)
-- **Decision:** 12 small servlets (`AddStudentServlet`, `DeleteStudentServlet` …) instead of one big
+- **Decision:** 13 small servlets (`AddStudentServlet`, `DeleteStudentServlet` …) instead of one big
   servlet with `?action=add|edit|delete`.
 - **Why:** Each class does one thing and is short; the URL tells you which class to open; "POST only"
   is enforced simply by not writing `doGet`.
@@ -93,10 +93,13 @@ up). Being able to explain trade-offs is often what examiners look for.
 - **Why:** Standard, simple and explainable protection without a security framework.
 - **Trade-offs:** One role only; no "remember me"; no lockout after failed logins (documented limitation).
 
-## DD-14 Command-line admin setup
-- **Decision:** `AdminSetup` creates the first admin; no default admin in SQL.
+## DD-14 No default admin: first-time setup page + command-line tool
+- **Decision:** No admin in `schema.sql`. The first admin is created on `/setup`, which works only
+  while the `admin` table is empty; `AdminSetup` (command line) can also reset a password.
 - **Why:** A default password in `schema.sql` would be public on GitHub and often never changed.
-- **Trade-off:** One extra setup step (documented in SETUP_AND_EXECUTION.md §5).
+  A browser form is easier for a beginner than a terminal tool.
+- **Trade-off:** Until the first admin is created, anyone who can open the app could create it — fine
+  on your own laptop; on a shared network, create the admin immediately after the first start.
 
 ## DD-15 Configuration outside the code
 - **Decision:** Database settings from environment variables or an ignored `db.properties`.
@@ -130,3 +133,10 @@ up). Being able to explain trade-offs is often what examiners look for.
   curl script for end-to-end HTTP tests. No mocking framework, no Selenium in the repository.
 - **Why:** Tests real behaviour with the fewest tools; easy to run and explain.
 - **Trade-off:** Browser-only behaviour (JavaScript dialogs, layout) is checked manually.
+
+## DD-21 Self-contained start (Maven Wrapper + Cargo + start scripts)
+- **Decision:** `mvnw` downloads Maven, the Cargo plugin downloads and runs Tomcat 9, and
+  `start.bat` / `start.sh` ask for the MySQL password once and start everything.
+- **Why:** Installing and configuring Maven and Tomcat by hand is where beginners most often get stuck.
+- **Trade-off:** The first start needs internet (about 35 MB of downloads). Installing Tomcat 9
+  manually is still documented as an alternative.

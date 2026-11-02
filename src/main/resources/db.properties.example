@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------
+# Database settings for the Student Registration System
+# ------------------------------------------------------------------
+# HOW TO USE:
+#   1. Copy this file and name the copy "db.properties"
+#      (in the same folder: src/main/resources/).
+#   2. Put your own MySQL username and password in the copy.
+#   3. Rebuild the project (mvn clean package).
+#
+# db.properties is listed in .gitignore, so your password is never
+# uploaded to GitHub. Do NOT write a real password in THIS file.
+#
+# Alternatively, set the environment variables DB_URL, DB_USER and
+# DB_PASSWORD. Environment variables take priority over this file.
+# ------------------------------------------------------------------
+
+# JDBC URL: jdbc:mysql://<host>:<port>/<database name>?<options>
+#   useSSL=false                  -> plain local connection (fine for localhost)
+#   allowPublicKeyRetrieval=true  -> needed by MySQL 8's default login plugin when SSL is off
+db.url=jdbc:mysql://localhost:3306/student_registration_db?useSSL=false&allowPublicKeyRetrieval=true
+
+# MySQL user that the application logs in as (see docs/SETUP_AND_EXECUTION.md)
+db.user=srs_app
+
+# The password for that MySQL user
+db.password=CHANGE_ME

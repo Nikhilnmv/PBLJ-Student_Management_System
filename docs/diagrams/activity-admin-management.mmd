@@ -1,0 +1,27 @@
+---
+title: Activity Diagram - Admin Management
+---
+flowchart TD
+    Start(["Start"]) --> Login["Open /login and enter username + password"]
+    Login --> Check{"BCrypt password<br/>matches?"}
+    Check -- "No" --> LoginErr["Show 'Invalid username or password'"] --> Login
+    Check -- "Yes" --> Session["Create new session + CSRF token"]
+    Session --> Dash["View dashboard statistics"]
+    Dash --> Choice{"Choose an action"}
+    Choice -- "Find students" --> Search["Search by name / roll / email,<br/>filter by department, semester, status"]
+    Search --> Results{"Any results?"}
+    Results -- "No" --> Empty["Show empty state"] --> Choice
+    Results -- "Yes" --> Profile["Open student profile"]
+    Profile --> Action{"Action on student"}
+    Action -- "Edit" --> EditForm["Change details in form"] --> Valid{"Valid and not<br/>duplicate?"}
+    Valid -- "No" --> EditForm
+    Valid -- "Yes" --> Update["UPDATE students"] --> Flash["Show success message"]
+    Action -- "Change status" --> Status["UPDATE status"] --> Flash
+    Action -- "Delete" --> Confirm{"Confirm in dialog?"}
+    Confirm -- "Cancel" --> Profile
+    Confirm -- "Yes" --> Delete["DELETE FROM students"] --> Flash
+    Action -- "Print" --> Print["Browser print view"] --> Choice
+    Choice -- "Add student" --> AddForm["Fill student form"] --> Valid
+    Choice -- "Export CSV" --> Csv["Download students-YYYY-MM-DD.csv"] --> Choice
+    Flash --> Choice
+    Choice -- "Log out" --> Logout["Invalidate session"] --> End(["End"])

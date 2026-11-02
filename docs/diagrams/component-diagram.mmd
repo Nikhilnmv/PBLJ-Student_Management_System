@@ -1,0 +1,47 @@
+---
+title: Component Diagram
+---
+flowchart LR
+    subgraph WebApp["student-registration.war"]
+        direction LR
+        subgraph Web["Web components"]
+            LIS["AppContextListener"]
+            AF["AuthFilter"]
+            HSF["HttpHeaderSecurityFilter<br/>(Tomcat built-in)"]
+            PUB["Public servlets<br/>RegisterServlet<br/>RegistrationSuccessServlet<br/>LoginServlet"]
+            ADM["Admin servlets<br/>DashboardServlet, StudentListServlet,<br/>StudentProfileServlet, AddStudentServlet,<br/>EditStudentServlet, DeleteStudentServlet,<br/>StudentStatusServlet, ExportStudentsServlet,<br/>LogoutServlet"]
+            HLP["StudentRequestHelper"]
+            JSP["JSP views + JSPF fragments"]
+            STATIC["Static assets<br/>app.css, app.js, Bootstrap, icons, font"]
+        end
+        subgraph Logic["Data and utilities"]
+            DAO["StudentDAO / AdminDAO"]
+            MOD["Student / Admin / StudentFilter"]
+            VAL["ValidationUtil + AppConstants"]
+            SEC["PasswordUtil (jBCrypt)<br/>CsrfUtil"]
+            CSV["CsvUtil"]
+            DBC["DBConnection"]
+        end
+    end
+    TOOL["AdminSetup<br/>(command-line tool)"]
+    DRV["MySQL Connector/J<br/>(JDBC driver)"]
+    MYSQL[("MySQL 8")]
+    CFG["db.properties or<br/>DB_URL / DB_USER / DB_PASSWORD"]
+
+    HSF --> AF --> ADM
+    PUB --> HLP
+    ADM --> HLP
+    HLP --> VAL
+    PUB --> DAO
+    ADM --> DAO
+    PUB --> SEC
+    ADM --> CSV
+    PUB --> JSP
+    ADM --> JSP
+    DAO --> MOD
+    DAO --> DBC
+    TOOL --> DAO
+    TOOL --> SEC
+    LIS --> DBC
+    DBC --> CFG
+    DBC --> DRV --> MYSQL

@@ -1,0 +1,22 @@
+---
+title: Activity Diagram - Student Registration
+---
+flowchart TD
+    Start(["Start"]) --> Open["Student opens /register"]
+    Open --> Fill["Fill in personal, academic and contact details"]
+    Fill --> Submit["Click Submit Registration"]
+    Submit --> BrowserCheck{"Browser checks pass?<br/>(required, email, pattern)"}
+    BrowserCheck -- "No" --> ShowHint["Highlight fields in red"] --> Fill
+    BrowserCheck -- "Yes" --> Post["POST /register to RegisterServlet"]
+    Post --> Read["Read and clean form fields<br/>(trim, roll upper-case, email lower-case)"]
+    Read --> ServerCheck{"ValidationUtil:<br/>all fields valid?"}
+    ServerCheck -- "No" --> Errors["Return form with error messages"] --> Fill
+    ServerCheck -- "Yes" --> Dup{"Roll number or email<br/>already in MySQL?"}
+    Dup -- "Yes" --> DupErr["Show 'already registered' message"] --> Fill
+    Dup -- "No" --> Insert["INSERT INTO students<br/>(PreparedStatement)"]
+    Insert --> Constraint{"UNIQUE / CHECK<br/>constraints OK?"}
+    Constraint -- "No" --> DupErr
+    Constraint -- "Yes" --> Id["MySQL generates student_id"]
+    Id --> Redirect["Redirect to /register/success"]
+    Redirect --> Show["Show Registration ID SRS-000NN"]
+    Show --> End(["End"])

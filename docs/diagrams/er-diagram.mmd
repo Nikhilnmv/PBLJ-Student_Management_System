@@ -1,0 +1,25 @@
+---
+title: Entity Relationship Diagram - student_registration_db
+---
+erDiagram
+    STUDENTS {
+        INT student_id PK "AUTO_INCREMENT"
+        VARCHAR(20) roll_number UK "NOT NULL"
+        VARCHAR(100) full_name "NOT NULL"
+        VARCHAR(100) email UK "NOT NULL"
+        VARCHAR(15) phone "NOT NULL"
+        VARCHAR(10) gender "CHECK Male/Female/Other"
+        DATE dob "NOT NULL"
+        VARCHAR(50) department "INDEX"
+        VARCHAR(50) course "NOT NULL"
+        INT semester "CHECK 1-8, INDEX"
+        TEXT address "NOT NULL"
+        VARCHAR(20) status "DEFAULT Active, CHECK, INDEX"
+        TIMESTAMP created_at "DEFAULT CURRENT_TIMESTAMP, INDEX"
+    }
+    ADMIN {
+        INT admin_id PK "AUTO_INCREMENT"
+        VARCHAR(50) username UK "NOT NULL"
+        VARCHAR(255) password_hash "BCrypt hash"
+        TIMESTAMP created_at "DEFAULT CURRENT_TIMESTAMP"
+    }

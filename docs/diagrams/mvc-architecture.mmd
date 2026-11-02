@@ -1,0 +1,43 @@
+---
+title: MVC + DAO Architecture
+---
+flowchart TB
+    Browser(["Browser"])
+
+    subgraph Controller["CONTROLLER - com.student.servlet"]
+        S1["RegisterServlet"]
+        S2["LoginServlet / LogoutServlet"]
+        S3["DashboardServlet"]
+        S4["StudentListServlet / StudentProfileServlet"]
+        S5["Add / Edit / Delete / Status / Export Servlets"]
+    end
+
+    subgraph View["VIEW - /WEB-INF/views (JSP)"]
+        J1["register.jsp, registration-success.jsp"]
+        J2["login.jsp"]
+        J3["admin/dashboard.jsp"]
+        J4["admin/students.jsp, admin/student-profile.jsp"]
+        J5["admin/student-form.jsp"]
+    end
+
+    subgraph Model["MODEL - com.student.model"]
+        M1["Student"]
+        M2["Admin"]
+        M3["StudentFilter"]
+    end
+
+    subgraph DAO["DAO - com.student.dao"]
+        D1["StudentDAO"]
+        D2["AdminDAO"]
+    end
+
+    DB[("MySQL<br/>student_registration_db")]
+
+    Browser -- "1 request" --> Controller
+    Controller -- "2 call method" --> DAO
+    DAO -- "3 SQL" --> DB
+    DB -- "4 rows (ResultSet)" --> DAO
+    DAO -- "5 Model objects" --> Controller
+    Controller -- "6 request.setAttribute + forward" --> View
+    View -- "7 reads Model with EL" --> Model
+    View -- "8 HTML" --> Browser

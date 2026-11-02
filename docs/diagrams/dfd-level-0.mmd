@@ -1,0 +1,12 @@
+---
+title: DFD Level 0 - Context Diagram
+---
+flowchart LR
+    Student["STUDENT<br/>(external entity)"]
+    Admin["ADMINISTRATOR<br/>(external entity)"]
+    System(("0.0<br/>Student<br/>Registration<br/>System"))
+
+    Student -- "Registration details" --> System
+    System -- "Registration ID /<br/>validation errors" --> Student
+    Admin -- "Login credentials,<br/>search criteria,<br/>student updates,<br/>delete / status requests" --> System
+    System -- "Dashboard statistics,<br/>student lists and profiles,<br/>CSV file,<br/>confirmation messages" --> Admin

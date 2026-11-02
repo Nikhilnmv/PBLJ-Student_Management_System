@@ -1,0 +1,42 @@
+---
+title: Sequence Diagram - Student Management (search, edit, delete)
+---
+sequenceDiagram
+    autonumber
+    actor A as Administrator (Browser)
+    participant AF as AuthFilter
+    participant LS as StudentListServlet
+    participant ES as EditStudentServlet
+    participant DS as DeleteStudentServlet
+    participant DAO as StudentDAO
+    participant DB as MySQL
+
+    Note over A,DB: 1. Search and filter
+    A->>AF: GET /admin/students?keyword=mehta&department=...
+    AF->>LS: logged in - continue
+    LS->>DAO: countStudents(filter), searchStudents(filter, offset, 10)
+    DAO->>DB: SELECT ... WHERE (full_name LIKE ? OR roll_number LIKE ? OR email LIKE ?) AND department = ?
+    DB-->>DAO: rows
+    DAO-->>LS: List of Student
+    LS-->>A: students.jsp (table + paging)
+
+    Note over A,DB: 2. Edit
+    A->>AF: GET /admin/students/edit?id=5
+    AF->>ES: continue
+    ES->>DAO: getStudentById(5)
+    ES-->>A: student-form.jsp pre-filled
+    A->>AF: POST /admin/students/edit (fields, id, csrfToken)
+    AF->>AF: CSRF token valid?
+    AF->>ES: continue
+    ES->>DAO: validate + isRollNumberTaken(roll, 5) / isEmailTaken(email, 5)
+    ES->>DAO: updateStudent(student)
+    DAO->>DB: UPDATE students SET ... WHERE student_id = ?
+    ES-->>A: 302 to /admin/students/view?id=5 + flash "Changes saved"
+
+    Note over A,DB: 3. Delete (after confirmation dialog in app.js)
+    A->>AF: POST /admin/students/delete (id, csrfToken)
+    AF->>DS: continue
+    DS->>DAO: getStudentById(id)
+    DS->>DAO: deleteStudent(id)
+    DAO->>DB: DELETE FROM students WHERE student_id = ?
+    DS-->>A: 302 to /admin/students + flash "Student ... was deleted."

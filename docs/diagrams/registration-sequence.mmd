@@ -1,0 +1,54 @@
+---
+title: Sequence Diagram - Student Registration
+---
+sequenceDiagram
+    autonumber
+    actor S as Student (Browser)
+    participant RS as RegisterServlet
+    participant H as StudentRequestHelper
+    participant V as ValidationUtil
+    participant DAO as StudentDAO
+    participant DBC as DBConnection
+    participant DB as MySQL
+    participant SS as RegistrationSuccessServlet
+    participant JSP as JSP views
+
+    S->>RS: GET /register
+    RS->>JSP: forward to register.jsp (empty Student, drop-down lists)
+    JSP-->>S: registration form
+    S->>S: app.js checks required fields (browser side)
+    S->>RS: POST /register (form fields)
+    RS->>H: readStudentFromRequest(request)
+    H-->>RS: Student object (trimmed, roll upper-case, email lower-case)
+    RS->>RS: setStatus("Active")
+    RS->>H: validateStudent(student, studentDAO, 0)
+    H->>V: validateStudent(student)
+    V-->>H: format errors (Map)
+    H->>DAO: isRollNumberTaken(roll, 0) / isEmailTaken(email, 0)
+    DAO->>DB: SELECT COUNT(*) FROM students WHERE roll_number = ? ...
+    DB-->>DAO: count
+    H-->>RS: errors Map
+    alt errors found
+        RS->>JSP: forward to register.jsp with student + errors
+        JSP-->>S: form again, wrong fields highlighted
+    else valid
+        RS->>DAO: addStudent(student)
+        DAO->>DBC: getConnection()
+        DAO->>DB: INSERT INTO students (...) VALUES (?, ?, ...)
+        alt UNIQUE constraint violated (rare race)
+            DB-->>DAO: SQLIntegrityConstraintViolationException
+            DAO-->>RS: DuplicateStudentException(field)
+            RS->>JSP: register.jsp with the field error
+        else inserted
+            DB-->>DAO: generated student_id
+            DAO-->>RS: newStudentId
+            RS->>DAO: getStudentById(newStudentId)
+            DAO->>DB: SELECT ... WHERE student_id = ?
+            RS->>RS: session.setAttribute("registeredStudent", student)
+            RS-->>S: 302 redirect to /register/success
+            S->>SS: GET /register/success
+            SS->>SS: take student from session, then remove it
+            SS->>JSP: forward to registration-success.jsp
+            JSP-->>S: "Registration Successful" + SRS-000NN
+        end
+    end

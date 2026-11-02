@@ -1,0 +1,34 @@
+---
+title: Request-Response Lifecycle (example - open the student list)
+---
+sequenceDiagram
+    autonumber
+    actor Admin as Admin (Browser)
+    participant Tomcat as Tomcat 9
+    participant Filter as AuthFilter
+    participant Servlet as StudentListServlet
+    participant DAO as StudentDAO
+    participant DBC as DBConnection
+    participant DB as MySQL
+    participant JSP as students.jsp
+
+    Admin->>Tomcat: GET /admin/students?semester=3 (cookie JSESSIONID)
+    Tomcat->>Filter: doFilter(request, response, chain)
+    Filter->>Filter: session has "loggedInAdmin"?
+    alt not logged in
+        Filter-->>Admin: 302 redirect to /login?required=true
+    else logged in
+        Filter->>Servlet: chain.doFilter() calls doGet()
+        Servlet->>Servlet: readFilterFromRequest() builds StudentFilter
+        Servlet->>DAO: countStudents(filter)
+        DAO->>DBC: getConnection()
+        DBC->>DB: open JDBC connection
+        DAO->>DB: SELECT COUNT(*) ... WHERE semester = ?
+        DB-->>DAO: ResultSet (count)
+        Servlet->>DAO: searchStudents(filter, offset, 10)
+        DAO->>DB: SELECT ... WHERE semester = ? ORDER BY ... LIMIT ? OFFSET ?
+        DB-->>DAO: ResultSet rows
+        DAO-->>Servlet: List of Student objects
+        Servlet->>JSP: request.setAttribute(...) + forward()
+        JSP-->>Admin: 200 OK - HTML table of students
+    end

@@ -1,0 +1,24 @@
+---
+title: Deployment Diagram (local execution on one laptop)
+---
+flowchart TB
+    subgraph Laptop["Student laptop (Windows / macOS / Linux)"]
+        subgraph Browser["Web browser (Chrome, Edge, Firefox)"]
+            Pages["http://localhost:8080/student-registration/"]
+        end
+        subgraph JVM["Java 17 JVM"]
+            subgraph Tomcat["Apache Tomcat 9 - port 8080"]
+                WAR["student-registration.war<br/>WEB-INF/classes (compiled code)<br/>WEB-INF/lib: mysql-connector-j, jbcrypt, jstl"]
+            end
+        end
+        subgraph MySQLServer["MySQL 8 Server - port 3306"]
+            Schema[("student_registration_db<br/>students, admin")]
+        end
+        Workbench["MySQL Workbench<br/>(optional, to view tables)"]
+        Maven["Maven 3<br/>mvn clean package"]
+    end
+
+    Pages -- "HTTP :8080" --> Tomcat
+    WAR -- "JDBC :3306" --> Schema
+    Workbench -- ":3306" --> Schema
+    Maven -- "builds" --> WAR

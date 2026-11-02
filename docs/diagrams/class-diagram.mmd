@@ -1,0 +1,163 @@
+---
+title: Class Diagram (main classes)
+---
+classDiagram
+    direction LR
+
+    class Student {
+        -int studentId
+        -String rollNumber
+        -String fullName
+        -String email
+        -String phone
+        -String gender
+        -LocalDate dob
+        -String department
+        -String course
+        -int semester
+        -String address
+        -String status
+        -LocalDateTime createdAt
+        +Student()
+        +Student(rollNumber, fullName, email, phone, gender, dob, department, course, semester, address)
+        +getRegistrationId() String
+        +getAge() int
+        +isActive() boolean
+        +getInitials() String
+        +getDobFormatted() String
+        +getCreatedAtFormatted() String
+    }
+    class Admin {
+        -int adminId
+        -String username
+        -String passwordHash
+    }
+    class StudentFilter {
+        -String keyword
+        -String department
+        -Integer semester
+        -String status
+        +isActive() boolean
+    }
+    class Serializable {
+        <<interface>>
+    }
+    Serializable <|.. Student
+    Serializable <|.. Admin
+
+    class StudentDAO {
+        +addStudent(Student) int
+        +getStudentById(int) Student
+        +searchStudents(StudentFilter, int, int) List~Student~
+        +searchStudents(StudentFilter) List~Student~
+        +countStudents(StudentFilter) int
+        +isRollNumberTaken(String, int) boolean
+        +isEmailTaken(String, int) boolean
+        +updateStudent(Student) boolean
+        +updateStatus(int, String) boolean
+        +deleteStudent(int) boolean
+        +countAllStudents() int
+        +countStudentsByStatus(String) int
+        +countDepartments() int
+        +getRecentStudents(int) List~Student~
+        +getDepartmentCounts() Map~String,Integer~
+        -buildWhereClause(StudentFilter, List) String
+        -mapRowToStudent(ResultSet) Student
+    }
+    class AdminDAO {
+        +findByUsername(String) Admin
+        +createAdmin(String, String) void
+        +updatePassword(String, String) boolean
+    }
+    class DuplicateStudentException {
+        -String field
+        +getField() String
+    }
+    class Exception
+    Exception <|-- DuplicateStudentException
+    StudentDAO ..> DuplicateStudentException : throws
+    StudentDAO ..> Student : creates
+    StudentDAO ..> StudentFilter : uses
+    AdminDAO ..> Admin : creates
+
+    class DBConnection {
+        <<utility>>
+        +getConnection()$ Connection
+        +getConfiguredUrl()$ String
+    }
+    class ValidationUtil {
+        <<utility>>
+        +validateStudent(Student)$ Map~String,String~
+        +isValidEmail(String)$ boolean
+        +isValidPhone(String)$ boolean
+        +isValidSemester(int)$ boolean
+    }
+    class PasswordUtil {
+        <<utility>>
+        +hashPassword(String)$ String
+        +checkPassword(String, String)$ boolean
+        +isStrongPassword(String)$ boolean
+    }
+    class CsrfUtil {
+        <<utility>>
+        +generateToken()$ String
+        +isValid(HttpSession, String)$ boolean
+    }
+    StudentDAO ..> DBConnection
+    AdminDAO ..> DBConnection
+
+    class HttpServlet {
+        <<javax.servlet>>
+        #doGet(request, response)
+        #doPost(request, response)
+    }
+    class RegisterServlet {
+        -StudentDAO studentDAO
+        #doGet()
+        #doPost()
+    }
+    class LoginServlet {
+        -AdminDAO adminDAO
+        #doGet()
+        #doPost()
+    }
+    class StudentListServlet {
+        -StudentDAO studentDAO
+        #doGet()
+    }
+    class EditStudentServlet {
+        -StudentDAO studentDAO
+        #doGet()
+        #doPost()
+    }
+    HttpServlet <|-- RegisterServlet
+    HttpServlet <|-- LoginServlet
+    HttpServlet <|-- StudentListServlet
+    HttpServlet <|-- EditStudentServlet
+    note for HttpServlet "8 more servlets extend HttpServlet in the same way:\nRegistrationSuccessServlet, LogoutServlet,\nDashboardServlet, StudentProfileServlet,\nAddStudentServlet, DeleteStudentServlet,\nStudentStatusServlet, ExportStudentsServlet"
+
+    class StudentRequestHelper {
+        <<helper>>
+        ~readStudentFromRequest(request)$ Student
+        ~validateStudent(Student, StudentDAO, int)$ Map
+        ~readFilterFromRequest(request)$ StudentFilter
+    }
+    RegisterServlet --> StudentDAO
+    StudentListServlet --> StudentDAO
+    EditStudentServlet --> StudentDAO
+    LoginServlet --> AdminDAO
+    LoginServlet ..> PasswordUtil
+    LoginServlet ..> CsrfUtil
+    RegisterServlet ..> StudentRequestHelper
+    EditStudentServlet ..> StudentRequestHelper
+    StudentRequestHelper ..> ValidationUtil
+
+    class Filter {
+        <<interface>>
+        +doFilter(request, response, chain)
+    }
+    class AuthFilter {
+        +doFilter(request, response, chain)
+    }
+    Filter <|.. AuthFilter
+    AuthFilter ..> CsrfUtil

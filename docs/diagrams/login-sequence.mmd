@@ -1,0 +1,41 @@
+---
+title: Sequence Diagram - Admin Login and Logout
+---
+sequenceDiagram
+    autonumber
+    actor A as Administrator (Browser)
+    participant LS as LoginServlet
+    participant ADAO as AdminDAO
+    participant DB as MySQL
+    participant PU as PasswordUtil (BCrypt)
+    participant Session as HttpSession
+    participant AF as AuthFilter
+    participant DS as DashboardServlet
+    participant LO as LogoutServlet
+
+    A->>LS: GET /login
+    LS-->>A: login.jsp
+    A->>LS: POST /login (username, password)
+    LS->>ADAO: findByUsername(username)
+    ADAO->>DB: SELECT admin_id, username, password_hash FROM admin WHERE username = ?
+    DB-->>ADAO: row or nothing
+    ADAO-->>LS: Admin or null
+    LS->>PU: checkPassword(password, admin.passwordHash)
+    PU-->>LS: true / false
+    alt admin not found or wrong password
+        LS-->>A: login.jsp + "Invalid username or password."
+    else correct
+        LS->>Session: invalidate old session, create new one (30 min timeout)
+        LS->>Session: setAttribute("loggedInAdmin", admin)
+        LS->>Session: setAttribute("csrfToken", random token)
+        LS-->>A: 302 redirect to /admin/dashboard + JSESSIONID cookie
+        A->>AF: GET /admin/dashboard (cookie)
+        AF->>Session: loggedInAdmin present?
+        AF->>DS: chain.doFilter()
+        DS-->>A: dashboard.jsp
+    end
+    A->>AF: POST /admin/logout (csrfToken)
+    AF->>Session: token matches?
+    AF->>LO: chain.doFilter()
+    LO->>Session: invalidate()
+    LO-->>A: 302 redirect to /login?logout=true

@@ -1,0 +1,43 @@
+---
+title: Use Case Diagram
+---
+flowchart LR
+    Student["Actor:<br/>Student<br/>(public visitor)"]
+    Admin["Actor:<br/>Administrator"]
+
+    subgraph System["Student Registration System"]
+        direction TB
+        UC1(["UC-01 Register as a student"])
+        UC2(["UC-02 View registration ID"])
+        UC3(["UC-03 Log in"])
+        UC4(["UC-04 Log out"])
+        UC5(["UC-05 View dashboard statistics"])
+        UC6(["UC-06 View / search / filter students"])
+        UC7(["UC-07 View student profile"])
+        UC8(["UC-08 Add student"])
+        UC9(["UC-09 Edit student"])
+        UC10(["UC-10 Delete student"])
+        UC11(["UC-11 Change student status"])
+        UC12(["UC-12 Export students to CSV"])
+        UC13(["UC-13 Print student profile"])
+        UCV(["Validate student data"])
+    end
+
+    Student --- UC1
+    Student --- UC2
+    Admin --- UC3
+    Admin --- UC4
+    Admin --- UC5
+    Admin --- UC6
+    Admin --- UC7
+    Admin --- UC8
+    Admin --- UC9
+    Admin --- UC10
+    Admin --- UC11
+    Admin --- UC12
+    Admin --- UC13
+
+    UC1 -. "include" .-> UCV
+    UC8 -. "include" .-> UCV
+    UC9 -. "include" .-> UCV
+    UC1 -. "extend: on success" .-> UC2

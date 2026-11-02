@@ -1,0 +1,31 @@
+---
+title: High-Level System Architecture
+---
+flowchart LR
+    subgraph Client["Client (Web Browser)"]
+        UI["HTML pages + Bootstrap 5 CSS<br/>app.js (validation, confirm dialog)"]
+    end
+
+    subgraph Server["Apache Tomcat 9 (Java 17)"]
+        direction TB
+        F["AuthFilter<br/>(protects /admin/*)"]
+        C["Controllers<br/>12 Servlets"]
+        V["Views<br/>JSP + JSTL"]
+        D["DAO Layer<br/>StudentDAO, AdminDAO"]
+        U["Utilities<br/>DBConnection, ValidationUtil,<br/>PasswordUtil, CsrfUtil, CsvUtil"]
+        M["Model<br/>Student, Admin, StudentFilter"]
+    end
+
+    subgraph DB["MySQL 8 Server"]
+        T1[("students")]
+        T2[("admin")]
+    end
+
+    UI -- "HTTP request (GET / POST)" --> F
+    F --> C
+    C -- "uses" --> U
+    C -- "calls" --> D
+    D -- "JDBC + PreparedStatement" --> DB
+    D -. "returns objects" .-> M
+    C -- "forward with data" --> V
+    V -- "HTML response" --> UI

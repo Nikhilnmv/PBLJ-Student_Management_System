@@ -1,0 +1,44 @@
+---
+title: DFD Level 1 - Main System Processes
+---
+flowchart TB
+    Student["STUDENT"]
+    Admin["ADMINISTRATOR"]
+
+    P1(("1.0<br/>Register<br/>Student"))
+    P2(("2.0<br/>Authenticate<br/>Admin"))
+    P3(("3.0<br/>Search and<br/>View Students"))
+    P4(("4.0<br/>Manage Student<br/>Records"))
+    P5(("5.0<br/>Generate<br/>Statistics"))
+    P6(("6.0<br/>Export<br/>CSV"))
+
+    D1[("D1 students")]
+    D2[("D2 admin")]
+    D3[("D3 HTTP session")]
+
+    Student -- "student details" --> P1
+    P1 -- "registration ID / errors" --> Student
+    P1 -- "check duplicates" --> D1
+    P1 -- "new student row" --> D1
+
+    Admin -- "username, password" --> P2
+    D2 -- "password hash" --> P2
+    P2 -- "admin + CSRF token" --> D3
+    P2 -- "login result" --> Admin
+
+    Admin -- "keyword, filters, page" --> P3
+    D3 -- "session check" --> P3
+    D1 -- "matching rows" --> P3
+    P3 -- "student list / profile" --> Admin
+
+    Admin -- "add / edit / status / delete" --> P4
+    D3 -- "session + token check" --> P4
+    P4 -- "INSERT / UPDATE / DELETE" --> D1
+    P4 -- "success / error message" --> Admin
+
+    D1 -- "counts, GROUP BY department,<br/>recent rows" --> P5
+    P5 -- "dashboard figures" --> Admin
+
+    Admin -- "filters" --> P6
+    D1 -- "matching rows" --> P6
+    P6 -- "students-DATE.csv" --> Admin

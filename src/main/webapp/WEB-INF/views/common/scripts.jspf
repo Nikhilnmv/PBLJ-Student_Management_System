@@ -1,0 +1,3 @@
+<%-- JavaScript files loaded at the end of every page (Bootstrap components + our app.js). --%>
+<script src="${ctx}/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="${ctx}/assets/js/app.js"></script>

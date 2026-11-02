@@ -1,0 +1,24 @@
+<%--
+    One reusable confirmation dialog (Bootstrap modal).
+    app.js opens it when a <form data-confirm="..."> is submitted, and only
+    submits the form if the admin clicks the confirm button.
+--%>
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-body p-4">
+                <div class="d-flex gap-3">
+                    <span class="stat-icon tone-danger flex-shrink-0"><i class="bi bi-exclamation-triangle"></i></span>
+                    <div>
+                        <h2 class="h5 mb-2" id="confirmModalTitle" data-confirm-title>Are you sure?</h2>
+                        <p class="text-muted mb-0" data-confirm-message></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                <button type="button" class="btn btn-light-soft" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" data-confirm-ok>Yes, continue</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+<%--
+    Common <head> content for every page: character set, mobile viewport,
+    page title and the stylesheets (Bootstrap, Bootstrap Icons, app.css).
+
+    Before including this fragment, a page sets:
+        <c:set var="pageTitle" value="..."/>
+    This fragment also defines ${ctx} = the application's context path
+    (e.g. "/student-registration"), used to build every link.
+--%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Student Registration System - online student registration and record management.">
+<title><c:out value="${pageTitle}"/> | Student Registration System</title>
+<link rel="icon" type="image/svg+xml" href="${ctx}/assets/img/favicon.svg">
+<link rel="stylesheet" href="${ctx}/assets/vendor/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="${ctx}/assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="${ctx}/assets/css/app.css">

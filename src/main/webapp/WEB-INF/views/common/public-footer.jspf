@@ -1,0 +1,7 @@
+<%-- Footer for the public pages. --%>
+<footer class="site-footer">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
+        <span>Student Registration System &middot; Project Based Learning Using Java</span>
+        <span>Built with Java Servlets, JSP, JDBC &amp; MySQL</span>
+    </div>
+</footer>

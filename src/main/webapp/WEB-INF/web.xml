@@ -32,12 +32,52 @@
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
 
+    <!-- All JSP pages and .jspf fragments are saved as UTF-8; remove blank lines left by directives -->
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <url-pattern>*.jspf</url-pattern>
+            <page-encoding>UTF-8</page-encoding>
+            <trim-directive-whitespaces>true</trim-directive-whitespaces>
+        </jsp-property-group>
+    </jsp-config>
+
+    <!--
+        Tomcat's built-in security header filter. It adds headers such as
+        X-Frame-Options: DENY (our pages cannot be shown inside another site's
+        frame - prevents "clickjacking") and X-Content-Type-Options: nosniff.
+    -->
+    <filter>
+        <filter-name>httpHeaderSecurity</filter-name>
+        <filter-class>org.apache.catalina.filters.HttpHeaderSecurityFilter</filter-class>
+        <init-param>
+            <param-name>hstsEnabled</param-name>
+            <param-value>false</param-value> <!-- HSTS only makes sense with HTTPS -->
+        </init-param>
+        <init-param>
+            <param-name>antiClickJackingOption</param-name>
+            <param-value>DENY</param-value>
+        </init-param>
+        <init-param>
+            <param-name>xssProtectionEnabled</param-name>
+            <param-value>false</param-value> <!-- obsolete header; escaping output is the real protection -->
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>httpHeaderSecurity</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <!-- Page shown for http://localhost:8080/student-registration/ -->
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
     <!-- Friendly error pages: users never see Java stack traces -->
+    <error-page>
+        <error-code>403</error-code>
+        <location>/WEB-INF/views/error.jsp</location>
+    </error-page>
     <error-page>
         <error-code>404</error-code>
         <location>/WEB-INF/views/error.jsp</location>

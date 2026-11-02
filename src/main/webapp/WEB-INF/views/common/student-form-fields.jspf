@@ -1,0 +1,151 @@
+<%--
+    The student form fields, shared by:
+      - register.jsp            (public registration)
+      - admin/student-form.jsp  (admin "Add Student" and "Edit Student")
+
+    Request attributes used (set by the servlet):
+      student      - Student object whose values fill the inputs (empty for a new form)
+      errors       - Map of field name -> error message from server-side validation
+      departments, courses, genders, semesters, statuses - drop-down choices
+      minDob, maxDob - allowed date-of-birth range
+      showStatusField - true on the admin form only
+
+    fn:escapeXml(...) converts characters such as < > " & into safe HTML codes,
+    so text typed by a user can never be run as HTML or JavaScript (prevents XSS).
+--%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<%-- ===================== Section 1: Personal details ===================== --%>
+<div class="form-section">
+    <div class="form-section-title">
+        <span class="section-icon"><i class="bi bi-person"></i></span>
+        <div>
+            <h2>Personal Details</h2>
+            <p>Name, gender and date of birth as per college records</p>
+        </div>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label for="fullName" class="form-label">Full Name<span class="required">*</span></label>
+            <input type="text" class="form-control${not empty errors.fullName ? ' is-invalid' : ''}" id="fullName" name="fullName"
+                   value="${fn:escapeXml(student.fullName)}" required minlength="2" maxlength="100"
+                   autocomplete="name" placeholder="e.g. Aarav Mehta">
+            <div class="invalid-feedback">${not empty errors.fullName ? fn:escapeXml(errors.fullName) : 'Please enter your full name (2-100 letters).'}</div>
+        </div>
+        <div class="col-md-6">
+            <label for="dob" class="form-label">Date of Birth<span class="required">*</span></label>
+            <input type="date" class="form-control${not empty errors.dob ? ' is-invalid' : ''}" id="dob" name="dob"
+                   value="${student.dobIso}" min="${minDob}" max="${maxDob}" required>
+            <div class="invalid-feedback">${not empty errors.dob ? fn:escapeXml(errors.dob) : 'Please enter a valid date of birth (age 15-60).'}</div>
+        </div>
+        <div class="col-12">
+            <span class="form-label d-block" id="genderLabel">Gender<span class="required">*</span></span>
+            <div class="choice-group${not empty errors.gender ? ' is-invalid' : ''}" role="radiogroup" aria-labelledby="genderLabel">
+                <c:forEach var="genderOption" items="${genders}" varStatus="loop">
+                    <input type="radio" class="btn-check" name="gender" id="gender${loop.index}"
+                           value="${genderOption}" ${student.gender == genderOption ? 'checked' : ''} required>
+                    <label class="btn" for="gender${loop.index}">${genderOption}</label>
+                </c:forEach>
+            </div>
+            <div class="invalid-feedback">${not empty errors.gender ? fn:escapeXml(errors.gender) : 'Please select a gender.'}</div>
+        </div>
+    </div>
+</div>
+
+<%-- ===================== Section 2: Academic details ===================== --%>
+<div class="form-section">
+    <div class="form-section-title">
+        <span class="section-icon"><i class="bi bi-mortarboard"></i></span>
+        <div>
+            <h2>Academic Details</h2>
+            <p>Your roll number, department, course and current semester</p>
+        </div>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label for="rollNumber" class="form-label">Roll / Registration Number<span class="required">*</span></label>
+            <input type="text" class="form-control${not empty errors.rollNumber ? ' is-invalid' : ''}" id="rollNumber" name="rollNumber"
+                   value="${fn:escapeXml(student.rollNumber)}" required minlength="3" maxlength="20"
+                   pattern="[A-Za-z0-9][A-Za-z0-9\/\-]{2,19}" data-uppercase autocomplete="off" placeholder="e.g. 23CSE001">
+            <div class="invalid-feedback">${not empty errors.rollNumber ? fn:escapeXml(errors.rollNumber) : 'Use 3-20 letters, digits, / or -.'}</div>
+        </div>
+        <div class="col-md-6">
+            <label for="semester" class="form-label">Current Semester<span class="required">*</span></label>
+            <select class="form-select${not empty errors.semester ? ' is-invalid' : ''}" id="semester" name="semester" required>
+                <option value="">Select semester</option>
+                <c:forEach var="semesterOption" items="${semesters}">
+                    <option value="${semesterOption}" ${student.semester == semesterOption ? 'selected' : ''}>Semester ${semesterOption}</option>
+                </c:forEach>
+            </select>
+            <div class="invalid-feedback">${not empty errors.semester ? fn:escapeXml(errors.semester) : 'Please select your semester.'}</div>
+        </div>
+        <div class="col-md-6">
+            <label for="department" class="form-label">Department<span class="required">*</span></label>
+            <select class="form-select${not empty errors.department ? ' is-invalid' : ''}" id="department" name="department" required>
+                <option value="">Select department</option>
+                <c:forEach var="departmentOption" items="${departments}">
+                    <option value="${fn:escapeXml(departmentOption)}" ${student.department == departmentOption ? 'selected' : ''}><c:out value="${departmentOption}"/></option>
+                </c:forEach>
+            </select>
+            <div class="invalid-feedback">${not empty errors.department ? fn:escapeXml(errors.department) : 'Please select your department.'}</div>
+        </div>
+        <div class="col-md-6">
+            <label for="course" class="form-label">Course<span class="required">*</span></label>
+            <select class="form-select${not empty errors.course ? ' is-invalid' : ''}" id="course" name="course" required>
+                <option value="">Select course</option>
+                <c:forEach var="courseOption" items="${courses}">
+                    <option value="${fn:escapeXml(courseOption)}" ${student.course == courseOption ? 'selected' : ''}><c:out value="${courseOption}"/></option>
+                </c:forEach>
+            </select>
+            <div class="invalid-feedback">${not empty errors.course ? fn:escapeXml(errors.course) : 'Please select your course.'}</div>
+        </div>
+        <c:if test="${showStatusField}">
+            <div class="col-md-6">
+                <label for="status" class="form-label">Status<span class="required">*</span></label>
+                <select class="form-select${not empty errors.status ? ' is-invalid' : ''}" id="status" name="status" required>
+                    <c:forEach var="statusOption" items="${statuses}">
+                        <option value="${statusOption}" ${student.status == statusOption ? 'selected' : ''}>${statusOption}</option>
+                    </c:forEach>
+                </select>
+                <div class="invalid-feedback">${not empty errors.status ? fn:escapeXml(errors.status) : 'Please select a status.'}</div>
+            </div>
+        </c:if>
+    </div>
+</div>
+
+<%-- ===================== Section 3: Contact details ===================== --%>
+<div class="form-section">
+    <div class="form-section-title">
+        <span class="section-icon"><i class="bi bi-envelope"></i></span>
+        <div>
+            <h2>Contact Details</h2>
+            <p>How the college can reach you</p>
+        </div>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label for="email" class="form-label">Email Address<span class="required">*</span></label>
+            <input type="email" class="form-control${not empty errors.email ? ' is-invalid' : ''}" id="email" name="email"
+                   value="${fn:escapeXml(student.email)}" required maxlength="100" autocomplete="email" placeholder="name@example.com">
+            <div class="invalid-feedback">${not empty errors.email ? fn:escapeXml(errors.email) : 'Please enter a valid email address.'}</div>
+        </div>
+        <div class="col-md-6">
+            <label for="phone" class="form-label">Mobile Number<span class="required">*</span></label>
+            <div class="input-group has-validation">
+                <span class="input-group-text">+91</span>
+                <input type="tel" class="form-control${not empty errors.phone ? ' is-invalid' : ''}" id="phone" name="phone"
+                       value="${fn:escapeXml(student.phone)}" required maxlength="10" pattern="[6-9][0-9]{9}"
+                       inputmode="numeric" autocomplete="tel-national" placeholder="10-digit mobile number">
+                <div class="invalid-feedback">${not empty errors.phone ? fn:escapeXml(errors.phone) : 'Enter a 10-digit number starting with 6, 7, 8 or 9.'}</div>
+            </div>
+        </div>
+        <div class="col-12">
+            <label for="address" class="form-label">Address<span class="required">*</span></label>
+            <textarea class="form-control${not empty errors.address ? ' is-invalid' : ''}" id="address" name="address" rows="3"
+                      required minlength="5" maxlength="500" autocomplete="street-address"
+                      placeholder="House number, street, city, state">${fn:escapeXml(student.address)}</textarea>
+            <div class="invalid-feedback">${not empty errors.address ? fn:escapeXml(errors.address) : 'Please enter your address (5-500 characters).'}</div>
+        </div>
+    </div>
+</div>

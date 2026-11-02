@@ -276,6 +276,11 @@ Date: 02 November 2026. Changes tested: Maven Wrapper (`mvnw`), Tomcat 9 run by 
    
    Result: 69 passed, 0 failed
    ```
-7. **Not executed:** `start.bat` and the PowerShell helper scripts (no Windows in the development
+7. **Fresh download from GitHub** (commit `a1ce762`): Windows scripts checked out with CRLF line
+   endings, `start.sh` executable; brand-new database from the two SQL files; `start.sh` → READY;
+   first-time setup → admin created; `functional-test.sh` → `Result: 69 passed, 0 failed`;
+   `./mvnw test -Dintegration=true` → all 49 tests pass; Ctrl+C stopped the application. The demo
+   video `docs/demo/student-registration-demo.mp4` was recorded from this instance.
+8. **Not executed:** `start.bat` and the PowerShell helper scripts (no Windows in the development
    environment) — listed as TC-ENV-06 (pending). If they fail on your PC, use the manual steps in
    [START_HERE.md](START_HERE.md#if-something-goes-wrong).

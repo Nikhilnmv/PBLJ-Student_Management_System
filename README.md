@@ -5,6 +5,8 @@ MySQL** on **Apache Tomcat 9**. Academic minor project for *Project Based Learni
 
 > **New here? Read [docs/START_HERE.md](docs/START_HERE.md)** — what the project is, what is done,
 > and how to run it on your laptop with MySQL Workbench in a few steps.
+>
+> 🎬 **Demo video (1½ min):** [docs/demo/student-registration-demo.mp4](docs/demo/student-registration-demo.mp4)
 
 Students register online and instantly receive a registration ID. Administrators log in to a secure
 panel to see live statistics and to search, filter, view, add, edit, delete, activate/deactivate,

@@ -25,6 +25,11 @@ You don't need to read any other document to get it running.
 MySQL **Workbench** is just a window for *looking at* the database. The database itself is the
 **MySQL Server**, which runs in the background.
 
+**Watch it working (1½ minutes):** [demo/student-registration-demo.mp4](demo/student-registration-demo.mp4) —
+a recording of the real application: registration, duplicate check, first-time admin setup, dashboard,
+search, edit, status change, filter, delete and logout. (The captions were added by the recording
+script; everything else is the actual app.)
+
 ### What is already done ✅
 | Part | Status |
 |---|---|

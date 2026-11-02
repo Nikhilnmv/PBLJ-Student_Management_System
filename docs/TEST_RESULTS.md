@@ -1,0 +1,192 @@
+# Test Results
+
+All results below come from tests that were **actually executed**. Tests that have not been run are
+listed separately in [§6 Pending tests](#6-pending-tests) and are **not** counted as passed.
+
+## 1. Summary
+
+| Test type | Executed | Passed | Failed | Pending | Evidence |
+|---|---|---|---|---|---|
+| Unit tests (JUnit 5) | 28 | 28 | 0 | 0 | §3.1 |
+| Integration tests (JUnit 5 + MySQL) | 15 | 15 | 0 | 0 | §3.2 |
+| HTTP functional checks (`functional-test.sh`) | 67 | 67 | 0 | 0 | §3.3 |
+| Test cases in [TEST_CASES.md](TEST_CASES.md) (80 in total) | 73 | 73 | 0 | 7 | TEST_CASES.md |
+
+Final verification run (clean build, fresh deployment): see [§7](#7-final-verification-run).
+
+## 2. Test environment (executed)
+
+| Item | Value |
+|---|---|
+| Date | 02 November 2026 |
+| OS | Ubuntu 24.04 LTS (cloud development container) |
+| Java | OpenJDK 17.0.20 (build with `--release 17`) |
+| Maven | 3.9.11 |
+| Application server | Apache Tomcat 9.0.111 |
+| Database | MySQL Community Server 8.0.46, app user `srs_app` (SELECT/INSERT/UPDATE/DELETE only) |
+| Browser | Chromium (driven automatically for UI checks) |
+| Data | 16 sample students + 1 manually registered test student (17 rows) |
+
+> These results prove the application works on this reference environment. Re-run the same tests on
+> your own laptop (Windows/macOS) and record your results in the pending rows of TEST_CASES.md.
+
+## 3. Automated test results
+
+### 3.1 Unit tests — `mvn test`
+```
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.model.StudentTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.ValidationUtilTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.PasswordUtilTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.CsvUtilTest
+[WARNING] Tests run: 15, Failures: 0, Errors: 0, Skipped: 15 -- in com.student.dao.StudentDAOIntegrationTest
+[WARNING] Tests run: 43, Failures: 0, Errors: 0, Skipped: 15
+[INFO] BUILD SUCCESS
+```
+The 15 integration tests are **skipped** in a normal build on purpose (they need MySQL).
+
+### 3.2 Integration tests — `mvn test -Dintegration=true`
+```
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.model.StudentTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.ValidationUtilTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.PasswordUtilTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.CsvUtilTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.dao.StudentDAOIntegrationTest
+[INFO] Tests run: 43, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+After the run: `SELECT COUNT(*) FROM students WHERE roll_number LIKE 'ITEST%'` → `0` (all test rows cleaned up).
+
+### 3.3 HTTP functional tests — `scripts/functional-test.sh`
+```
+Testing http://localhost:8080/student-registration (run 41800)
+
+1. Student registration
+  PASS  TC-REG-01a  Registration form opens
+  PASS  TC-REG-01b  Valid registration redirects to success page
+  PASS  TC-REG-01c  Success page shows a registration ID
+  PASS  TC-REG-10   Refreshing the success page does not resubmit
+  PASS  TC-REG-02a  Empty form is rejected (stays on form)
+  PASS  TC-REG-02b  Empty form lists required-field errors
+  PASS  TC-REG-03   Invalid email is rejected
+  PASS  TC-REG-04   Invalid phone number is rejected
+  PASS  TC-REG-05   Duplicate roll number is rejected (case-insensitive)
+  PASS  TC-REG-06   Duplicate email is rejected (case-insensitive)
+  PASS  TC-REG-07   Semester outside 1-8 is rejected
+  PASS  TC-REG-08   Date of birth in the future is rejected
+  PASS  TC-REG-12   Department not in the list is rejected
+
+2. Authentication and access control
+  PASS  TC-AUTH-05  Dashboard without login redirects to login
+  PASS  TC-SEC-04   Protected without login: /admin/students
+  PASS  TC-SEC-04   Protected without login: /admin/students/view?id=1
+  PASS  TC-SEC-04   Protected without login: /admin/students/add
+  PASS  TC-SEC-04   Protected without login: /admin/students/export
+  PASS  TC-AUTH-02  Wrong password is rejected
+  PASS  TC-AUTH-03  Unknown username gets the same message
+  PASS  TC-AUTH-04  Empty login fields are rejected
+  PASS  TC-SEC-02a  SQL injection in username does not log in
+  PASS  TC-SEC-02b  SQL injection in password does not log in
+  PASS  TC-AUTH-01  Correct credentials redirect to dashboard
+  PASS  TC-AUTH-08  Session ID changes at login
+  PASS  TC-DASH-01a Dashboard opens after login
+  PASS  TC-AUTH-07  Admin pages are not cached
+  PASS  TC-SEC-09   Anti-clickjacking header present
+  PASS  TC-AUTH-10  Login page redirects when already logged in
+
+3. Student management
+  PASS  TC-REG-01d  Registered student is stored and searchable by roll number
+  PASS  TC-REG-09   Forged 'status=Inactive' was ignored (stored as Active)
+  PASS  TC-REG-11   Roll number stored in upper case
+  PASS  TC-MGT-01   Student list shows records
+  PASS  TC-MGT-02   Search by name
+  PASS  TC-MGT-03   Search by roll number
+  PASS  TC-MGT-04   Search by email
+  PASS  TC-MGT-08   Combined keyword + department + semester filter
+  PASS  TC-MGT-06   Semester filter excludes non-matching students
+  PASS  TC-MGT-05   Department filter excludes non-matching students
+  PASS  TC-MGT-07   Status filter excludes non-matching students
+  PASS  TC-SEC-03   SQL injection in search returns no rows
+  PASS  TC-MGT-09   Profile shows the student's registration ID
+  PASS  TC-MGT-10   Profile with unknown ID gives 404
+  PASS  TC-SEC-10   Error page shows no Java stack trace
+  PASS  TC-MGT-11   Admin can add a student
+  PASS  TC-SEC-06a  Add without CSRF token is refused
+  PASS  TC-MGT-12a  Edit saves and returns to profile
+  PASS  TC-MGT-12b  Edited name is shown
+  PASS  TC-MGT-12c  Edited semester is shown
+  PASS  TC-MGT-13   Edit to another student's roll number is rejected
+  PASS  TC-MGT-14   Status changed to Inactive
+  PASS  TC-MGT-17a  CSV is downloaded as a file
+  PASS  TC-MGT-17b  CSV contains header + 2 filtered rows
+  PASS  TC-MGT-16   Delete via GET is not allowed
+  PASS  TC-SEC-06b  Delete without CSRF token is refused
+  PASS  TC-MGT-15a  Delete with token redirects to list
+  PASS  TC-MGT-15b  Deleted student no longer exists
+
+4. Security: SQL injection and XSS in registration
+  PASS  TC-SEC-01a  SQL in the name field is rejected by validation
+  PASS  TC-SEC-01b  SQL text in address is stored as plain text (table not dropped)
+  PASS  TC-SEC-07a  HTML in address is displayed escaped
+  PASS  TC-SEC-07b  No executable <script> from user input
+  PASS  TC-SEC-08a  First submission is saved
+  PASS  TC-SEC-08b  Identical second submission is rejected as duplicate
+
+5. Logout
+  PASS  TC-SEC-06c  Logout without CSRF token is refused
+  PASS  TC-DASH-02  Dashboard total drops by 3 after deleting test students
+  PASS  TC-AUTH-06a Logout redirects to login page
+  PASS  TC-AUTH-06b Old session cannot open the dashboard after logout
+
+Result: 67 passed, 0 failed
+```
+Database rows before the run: 17 · after the run: 17 · leftover `FT…` rows: 0.
+
+## 4. Manual and browser test results (highlights)
+
+| Test | Result |
+|---|---|
+| Admin setup tool (TC-AUTH-12) | Weak password and mismatch rejected; admin created with a 60-char `$2a$12$` hash; re-run without changes when answering "no". |
+| Dashboard vs SQL (TC-DASH-01, 03) | Cards 17 / 15 / 2 / 7 and all 7 department counts identical to direct SQL queries. |
+| Database stopped (TC-SEC-11) | Home and registration form still load; submitting → friendly 500 page; login → "The database is not available right now."; no stack traces; Tomcat log contains the details ("Communications link failure"). After restarting MySQL the dashboard worked again without restarting Tomcat. |
+| Browser validation, double submit (TC-REG-13, TC-SEC-08) | Empty submit blocked in the browser; two rapid clicks → exactly 1 submission; button disabled showing "Submitting…". |
+| Confirmation dialog (TC-MGT-20) | Cancel kept the record; Delete removed it and showed "Student Browser Test Student (24IT-988) was deleted." |
+| Mobile (TC-UI-01) | 8 pages at 390 px width: no horizontal overflow; slide-in admin menu works. |
+| Offline (TC-UI-02) | No page references any internet resource. |
+| Performance (TC-PERF-01) | 10,017 students: dashboard 38 ms, list 18 ms, page 500 34 ms, search 41–42 ms, filters 17 ms, profile 7 ms; CSV export of 10,018 lines 0.35 s. `EXPLAIN` confirmed index use (`idx_students_semester`, backward scan on `idx_students_created_at`). Temporary rows deleted afterwards. |
+| Secrets (TC-SEC-12) | `db.properties` ignored by Git; database and admin passwords found 0 times in the full Git history. |
+
+## 5. Defects found and fixed
+
+| ID | Found by | Defect | Fix | Re-tested |
+|---|---|---|---|---|
+| D-01 | Re-running `schema.sql` | Script failed on second run: MySQL has no `CREATE INDEX IF NOT EXISTS` | Indexes moved inside `CREATE TABLE IF NOT EXISTS` | Ran schema twice — OK |
+| D-02 | Visual review | Cards looked grey: Bootstrap 5.3 uses `--bs-body-bg` for card backgrounds | `--bs-body-bg: #fff`; page background set on `body` | Screenshots — OK |
+| D-03 | Code review | `student-form.jsp` used EL `concat()` with a number for the Cancel link (would fail at runtime) | Replaced by `<c:set>` | Edit/Add pages load — OK |
+| D-04 | Code review | The admin top bar showed a static "MySQL connected" label that was not a real check | Removed (no fake status indicators) | — |
+| D-05 | Visual review | Filter bar: "Apply" button squeezed when the clear (×) button appeared | Column widths rebalanced | Screenshot — OK |
+| D-06 | Print-media rendering | Printed profile included the navy sidebar stripe and grey background | `@media print` rules for the admin layout | Print view/PDF — OK |
+| D-07 | Visual review | Success page buttons wrapped onto two lines | `text-nowrap`, shorter label | Screenshot — OK |
+| D-08 | Unit test design | Date format depended on the computer's language (`MMM`, `a`) | `DateTimeFormatter…(…, Locale.ENGLISH)` | `StudentTest` — OK |
+| D-09 | Code review | CSV servlet contained an invisible literal BOM character in the source | Replaced with the readable escape `'﻿'` | CSV still opens as UTF-8 — OK |
+
+Two defects in the **test script itself** (not the application) were also fixed: overriding a form
+field by appending a second value (the servlet reads the first value), and counting an already
+deleted student during clean-up.
+
+## 6. Pending tests
+
+These have **not** been executed. They are not counted as passed.
+
+| ID | Test | Why pending | How to run |
+|---|---|---|---|
+| TC-AUTH-11 | Session timeout after 30 min | Needs a 30-minute idle wait | Log in, wait 31 minutes, click a menu item → expect the login page |
+| TC-DASH-05 | Dashboard with an empty database | Needs the `students` table emptied | `DELETE FROM students;` on a test copy, open the dashboard |
+| TC-UI-03 | Firefox / Edge / Safari | Only Chromium available during development | Open each page in each browser |
+| TC-ENV-01 | Setup on Windows | Needs your laptop | Follow SETUP_AND_EXECUTION.md |
+| TC-ENV-02 | Setup on macOS | Needs a Mac | Follow SETUP_AND_EXECUTION.md |
+| TC-ENV-03 | Run from IntelliJ / Eclipse | Needs the IDE | SETUP_AND_EXECUTION.md §7 options B/C |
+| TC-ENV-04 | View rows in MySQL Workbench | Needs Workbench | Register a student; refresh `students` in Workbench |
+| — | Printing on paper | Needs a printer | Print a profile and the success page |
+
+## 7. Final verification run
+_Filled in after the final clean build and deployment (Stage 10)._

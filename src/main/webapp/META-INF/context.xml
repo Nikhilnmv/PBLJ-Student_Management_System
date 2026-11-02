@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Tomcat-specific settings for this web application.
+
+    sameSiteCookies="lax" tells the browser NOT to send the session cookie
+    with form submissions that come from other websites. Together with the
+    CSRF token checked in AuthFilter, this protects admin actions such as
+    "delete student" from being triggered by a malicious page.
+-->
+<Context>
+    <CookieProcessor sameSiteCookies="lax" />
+</Context>

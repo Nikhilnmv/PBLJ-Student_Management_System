@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Maven Project Object Model (POM) for the Student Registration System.
+
+    Maven reads this file to:
+      1. Download the libraries (dependencies) the project needs.
+      2. Compile the Java code for Java 17.
+      3. Run the JUnit tests.
+      4. Package everything into a WAR file that Apache Tomcat 9 can run.
+
+    Build command:  mvn clean package
+    Output file:    target/student-registration.war
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.student</groupId>
+    <artifactId>student-registration</artifactId>
+    <version>1.0.0</version>
+    <!-- WAR = Web Application Archive, the file format Tomcat understands -->
+    <packaging>war</packaging>
+
+    <name>Student Registration System</name>
+    <description>Web-based student registration and management system built with Java Servlets, JSP, JDBC and MySQL.</description>
+
+    <properties>
+        <!-- Compile for Java 17 even if a newer JDK is installed -->
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Library versions kept in one place -->
+        <mysql.connector.version>8.4.0</mysql.connector.version>
+        <jbcrypt.version>0.4</jbcrypt.version>
+        <junit.version>5.11.4</junit.version>
+    </properties>
+
+    <dependencies>
+        <!--
+            Servlet API 4.0 (javax.servlet.*).
+            Scope "provided" means Tomcat 9 already has this library,
+            so it is used for compiling but NOT copied into the WAR file.
+        -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- JSP API 2.3 (javax.servlet.jsp.*), also provided by Tomcat 9 -->
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>javax.servlet.jsp-api</artifactId>
+            <version>2.3.3</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            JSTL 1.2 (JSP Standard Tag Library): gives JSP pages tags such as
+            <c:forEach>, <c:if> and <c:out>. Tomcat does NOT include JSTL,
+            so it must be packaged inside the WAR (default "compile" scope).
+        -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <!-- MySQL JDBC driver: lets Java code talk to the MySQL database -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql.connector.version}</version>
+            <exclusions>
+                <!-- Only needed for MySQL's X DevAPI, which this project does not use -->
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-java</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- jBCrypt: one small class used to hash and check admin passwords -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>${jbcrypt.version}</version>
+        </dependency>
+
+        <!-- JUnit 5: unit testing framework (used only while testing) -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- Produces target/student-registration.war, so the app URL becomes
+             http://localhost:8080/student-registration/ -->
+        <finalName>student-registration</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+            </plugin>
+
+            <!--
+                Lets us run the one-time admin setup tool from the terminal:
+                mvn compile exec:java -Dexec.mainClass=com.student.util.AdminSetup
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <mainClass>com.student.util.AdminSetup</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

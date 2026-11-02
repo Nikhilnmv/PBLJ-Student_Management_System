@@ -248,7 +248,7 @@ creates **`target/student-registration.war`**. The last lines must say `BUILD SU
 3. Wait about 10 seconds, then open **<http://localhost:8080/student-registration/>**.
 4. Stop Tomcat with `shutdown.bat` / `shutdown.sh`.
 
-Check `<TOMCAT>/logs/catalina.<date>.log` (macOS: also `catalina.out`). A successful start contains:
+Check `<TOMCAT>/logs/localhost.<date>.log` (the application's own log). A successful start contains:
 ```
 Student Registration System: connected to MySQL (8.0.xx) at jdbc:mysql://localhost:3306/student_registration_db...
 ```
@@ -329,5 +329,6 @@ Then repeat step 3.1 (schema + sample data), step 3.2's `GRANT` line, and step 5
 | `mvn` not recognised | Maven `bin` folder not on Path | Repeat step 1.2 and open a **new** terminal |
 | `mvn -version` shows the wrong Java | `JAVA_HOME` points to another JDK | Set `JAVA_HOME` to the JDK 17 folder |
 
-Where are the logs? `<TOMCAT>/logs/`. `catalina.<date>.log` contains start-up messages,
-`localhost.<date>.log` contains application errors with full details (users never see these).
+Where are the logs? `<TOMCAT>/logs/`. `catalina.<date>.log` contains Tomcat's own start-up messages (version, port, deployment),
+`localhost.<date>.log` contains the application's messages — the "connected to MySQL" start-up line and
+errors with full details (users never see these).

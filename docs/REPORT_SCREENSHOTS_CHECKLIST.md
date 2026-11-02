@@ -44,7 +44,7 @@ fictional sample data (never real personal data).
 | 30 | ☐ | Maven build success | Terminal: `mvn clean package` | `30-maven-build.png` | Successful Maven build |
 | 31 | ☐ | Unit / integration tests | Terminal: `mvn test -Dintegration=true` | `31-tests-passed.png` | Automated tests passing |
 | 32 | ☐ | Functional test script | Terminal: `ADMIN_PASSWORD=… ./scripts/functional-test.sh` (last lines) | `32-functional-tests.png` | Automated HTTP tests passing |
-| 33 | ☐ | Tomcat start-up log | `catalina.<date>.log` line "connected to MySQL" | `33-tomcat-log.png` | Application connected to MySQL at start-up |
+| 33 | ☐ | Tomcat start-up log | `<TOMCAT>/logs/localhost.<date>.log` line "connected to MySQL" | `33-tomcat-log.png` | Application connected to MySQL at start-up |
 
 Diagrams for the report are already exported in `docs/diagrams/exports/` (PNG and SVG) — no
 screenshots needed for them.

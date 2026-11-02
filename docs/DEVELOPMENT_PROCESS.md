@@ -69,6 +69,7 @@ Each increment ended with a build, tests, a commit and a push to GitHub. The Git
 | 11 | Bug fixes from testing | CSS, JSPs, `Student` | *Fix issues found during testing* |
 | 12 | Automated tests | `src/test`, `scripts/functional-test.sh` | *Add unit, integration and functional tests* |
 | 13 | Diagrams and documentation | `docs/` | *Add UML, ER, DFD and architecture diagrams* and documentation commits |
+| 14 | Final verification: fresh clone + fresh database, all tests, responsive fixes | `students.jsp`, `dashboard.jsp`, sidebar, `app.css`, test docs | *Improve responsive layout of admin tables*, *Add README screenshots and final verification results* |
 
 Practices followed:
 - Meaningful names, comments on important logic, short methods.
@@ -86,7 +87,7 @@ Four levels (details in [TEST_PLAN.md](TEST_PLAN.md)):
 ## 8. Validation
 Results were compared with requirements in the [traceability matrix](TRACEABILITY_MATRIX.md). Every
 functional requirement is verified by at least one executed test, except the 30-minute timeout
-(configuration verified, timed test pending). Nine defects were found and fixed during testing
+(configuration verified, timed test pending). Ten defects were found and fixed during testing and final verification
 ([TEST_RESULTS.md §5](TEST_RESULTS.md#5-defects-found-and-fixed)).
 
 ## 9. Limitations

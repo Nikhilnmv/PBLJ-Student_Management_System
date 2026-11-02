@@ -113,7 +113,7 @@ sample data loaded. **P2** = P1 + an admin account exists and the tester is logg
 
 | ID | Feature | Pre | Input | Expected result | Actual result | Status | Remarks |
 |---|---|---|---|---|---|---|---|
-| TC-UI-01 | Mobile layout | P1/P2 | width 390 px: register, dashboard, student list; open menu | No horizontal scrolling; sidebar becomes slide-in menu | 8 pages measured (home, register, login, dashboard, list, profile, edit, add): page width 390 px = screen width 390 px; menu opens | Pass | Browser |
+| TC-UI-01 | Mobile layout | P1/P2 | width 390 px: register, dashboard, student list; open menu | No horizontal scrolling; sidebar becomes slide-in menu | 8 pages at 390 px fit exactly (page width = screen width); dashboard and student list measured at 11 widths from 360 to 1920 px: no page or table overflow; slide-in menu works below 1200 px | Pass | Browser; defect D-10 found and fixed |
 | TC-UI-02 | Works offline | P1 | check pages for external URLs | No CDN / internet resources | None found; Bootstrap, icons and font served locally | Pass | Manual (grep) |
 | TC-UI-03 | Other browsers | P1 | Firefox, Edge, Safari | Same appearance and behaviour | — | Pending | Only Chromium was used in development |
 | TC-PERF-01 | 10,000 students | P2 + 10,000 extra rows | time dashboard, list (page 1 and 500), search, filters, profile, CSV export | Each page < 1 s | Best of 5: dashboard 38 ms, list 18 ms, page 500 34 ms, name search 41 ms, roll search 42 ms, 3 filters 17 ms, profile 7 ms; CSV of 10,018 lines 0.35 s; `EXPLAIN` shows indexes used | Pass | Manual; extra rows deleted afterwards |

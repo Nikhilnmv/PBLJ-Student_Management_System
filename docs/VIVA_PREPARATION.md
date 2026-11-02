@@ -541,7 +541,7 @@ So month names and AM/PM are the same on every computer regardless of its langua
 
 ### F.1 Before the viva (checklist — do it 15 minutes early)
 - [ ] MySQL is running (Windows: Services → MySQL80 → Running; macOS: `brew services list`).
-- [ ] Tomcat is started and `<TOMCAT>/logs/catalina.<date>.log` shows "connected to MySQL".
+- [ ] Tomcat is started and `<TOMCAT>/logs/localhost.<date>.log` shows "connected to MySQL".
 - [ ] Browser tab 1: <http://localhost:8080/student-registration/> · tab 2: `/login`.
 - [ ] MySQL Workbench is connected and has a query tab with:
       `USE student_registration_db; SELECT * FROM students ORDER BY student_id DESC LIMIT 5;`

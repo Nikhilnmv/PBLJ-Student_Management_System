@@ -150,7 +150,7 @@ Database rows before the run: 17 · after the run: 17 · leftover `FT…` rows: 
 | Database stopped (TC-SEC-11) | Home and registration form still load; submitting → friendly 500 page; login → "The database is not available right now."; no stack traces; Tomcat log contains the details ("Communications link failure"). After restarting MySQL the dashboard worked again without restarting Tomcat. |
 | Browser validation, double submit (TC-REG-13, TC-SEC-08) | Empty submit blocked in the browser; two rapid clicks → exactly 1 submission; button disabled showing "Submitting…". |
 | Confirmation dialog (TC-MGT-20) | Cancel kept the record; Delete removed it and showed "Student Browser Test Student (24IT-988) was deleted." |
-| Mobile (TC-UI-01) | 8 pages at 390 px width: no horizontal overflow; slide-in admin menu works. |
+| Responsive layout (TC-UI-01) | 8 pages at 390 px width: no horizontal overflow. Dashboard and student list at 360, 390, 576, 768, 992, 1024, 1200, 1280, 1366, 1440 and 1920 px: no page or table overflow (after fixing D-10). Slide-in admin menu works. |
 | Offline (TC-UI-02) | No page references any internet resource. |
 | Performance (TC-PERF-01) | 10,017 students: dashboard 38 ms, list 18 ms, page 500 34 ms, search 41–42 ms, filters 17 ms, profile 7 ms; CSV export of 10,018 lines 0.35 s. `EXPLAIN` confirmed index use (`idx_students_semester`, backward scan on `idx_students_created_at`). Temporary rows deleted afterwards. |
 | Secrets (TC-SEC-12) | `db.properties` ignored by Git; database and admin passwords found 0 times in the full Git history. |
@@ -167,7 +167,8 @@ Database rows before the run: 17 · after the run: 17 · leftover `FT…` rows: 
 | D-06 | Print-media rendering | Printed profile included the navy sidebar stripe and grey background | `@media print` rules for the admin layout | Print view/PDF — OK |
 | D-07 | Visual review | Success page buttons wrapped onto two lines | `text-nowrap`, shorter label | Screenshot — OK |
 | D-08 | Unit test design | Date format depended on the computer's language (`MMM`, `a`) | `DateTimeFormatter…(…, Locale.ENGLISH)` | `StudentTest` — OK |
-| D-09 | Code review | CSV servlet contained an invisible literal BOM character in the source | Replaced with the readable escape `'﻿'` | CSV still opens as UTF-8 — OK |
+| D-09 | Code review | CSV servlet contained an invisible literal BOM character in the source | Replaced with the readable escape `'\uFEFF'` | CSV still opens as UTF-8 — OK |
+| D-10 | Final verification (screenshots at 1280 px, then automated width measurement) | On 360–1024 px and 1200–1280 px screens the student table (and the dashboard table at 1280 px) was wider than its card, so the Actions/Status columns were cut off and needed sideways scrolling | Admin sidebar becomes a slide-in menu below 1200 px; less important columns hidden on small screens; long names/emails truncated with "…" (full text on hover); filter bar wraps to two rows below 1400 px | No overflow at 11 widths; all tests re-run — OK |
 
 Two defects in the **test script itself** (not the application) were also fixed: overriding a form
 field by appending a second value (the servlet reads the first value), and counting an already
@@ -189,4 +190,52 @@ These have **not** been executed. They are not counted as passed.
 | — | Printing on paper | Needs a printer | Print a profile and the success page |
 
 ## 7. Final verification run
-_Filled in after the final clean build and deployment (Stage 10)._
+
+Performed on 02 November 2026 after all code and documentation were finished, following
+[SETUP_AND_EXECUTION.md](SETUP_AND_EXECUTION.md) step by step, as a new user would:
+
+1. **Fresh clone** of the GitHub repository into an empty folder → no `db.properties`
+   present (only the example) → `mvn clean package` → `BUILD SUCCESS`, WAR with 28 classes.
+2. **Database recreated from scratch:** `DROP DATABASE`, then `schema.sql` and `sample_data.sql`
+   → 2 tables, 16 students, 0 admins; `srs_app` user re-granted.
+3. **Configuration:** `db.properties` created from `db.properties.example`; `git status` shows it is ignored.
+4. **Admin account:** created with `mvn compile exec:java` → "SUCCESS: administrator 'admin' created."
+5. **Deployment** to a clean Tomcat 9.0.111 on Java 17 → `localhost.<date>.log`:
+   `Student Registration System: connected to MySQL (8.0.46…)`; home page HTTP 200.
+6. **All automated tests** (re-run once more after fixing D-10), `mvn test -Dintegration=true`:
+   ```
+   [INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.model.StudentTest
+   [INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.ValidationUtilTest
+   [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.PasswordUtilTest
+   [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.util.CsvUtilTest
+   [INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0 -- in com.student.dao.StudentDAOIntegrationTest
+   [INFO] Tests run: 43, Failures: 0, Errors: 0, Skipped: 0
+   [INFO] BUILD SUCCESS
+   ```
+   `functional-test.sh` (last lines):
+   ```
+     PASS  TC-AUTH-06a Logout redirects to login page
+     PASS  TC-AUTH-06b Old session cannot open the dashboard after logout
+   
+   Result: 67 passed, 0 failed
+   ```
+   Students before and after the functional run: 16 → 16 (test data cleaned up).
+7. **Browser checks:**
+   ```
+   1) empty submit blocked in browser: true | invalid fields: 12 | still on /student-registration/register
+      gender selected via label: true
+   2) roll number auto-uppercased while typing: 24IT-988
+   3) after submit URL: /student-registration/register/success | ID shown: SRS-00084
+   4) modal message: Delete Browser Test Student (24IT-988)? This permanently removes the record from the database.
+   5) cancel keeps record: true
+   6) after confirm flash: Student Browser Test Student (24IT-988) was deleted.
+   7) empty state: No students match your search
+   8) mobile menu opens: true
+   JS errors: none
+   submissions sent: 1 | button disabled: true | button text: Submitting...
+   no overflow at any width
+   ```
+8. **Repository:** working tree clean and identical to GitHub after the final push; no secrets tracked.
+
+**Verdict:** every executed test passes on a completely fresh setup. The pending items in §6 still
+need to be done on your own laptop.

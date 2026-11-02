@@ -170,7 +170,7 @@ MySQL 8.0.46):
   other browsers, Workbench view, 30-minute timeout, empty-database dashboard).
 - Performance with 10,017 students: dashboard 38 ms, list 18 ms, search ≈ 41 ms, filters 17 ms; CSV
   export of all rows 0.35 s.
-- Nine defects found and fixed during testing.
+- Ten defects found and fixed during testing and final verification.
 > Add your own laptop's results for the pending cases before including them in the report.
 
 ## 20. Advantages

@@ -59,7 +59,7 @@
         <span class="section-icon"><i class="bi bi-mortarboard"></i></span>
         <div>
             <h2>Academic Details</h2>
-            <p>Your roll number, department, course and current semester</p>
+            <p>Roll number, department, course and current semester</p>
         </div>
     </div>
     <div class="row g-3">
@@ -120,7 +120,7 @@
         <span class="section-icon"><i class="bi bi-envelope"></i></span>
         <div>
             <h2>Contact Details</h2>
-            <p>How the college can reach you</p>
+            <p>Email, mobile number and postal address</p>
         </div>
     </div>
     <div class="row g-3">

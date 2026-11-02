@@ -156,6 +156,19 @@ final class StudentRequestHelper {
     }
 
     /**
+     * Stores a one-time success message in the session. It is shown on the
+     * next page (see flash-messages.jspf) and then removed.
+     */
+    static void setFlashSuccess(HttpServletRequest request, String message) {
+        request.getSession().setAttribute("flashSuccess", message);
+    }
+
+    /** Stores a one-time error message in the session (shown on the next page). */
+    static void setFlashError(HttpServletRequest request, String message) {
+        request.getSession().setAttribute("flashError", message);
+    }
+
+    /**
      * Reads a positive whole number (such as a student ID) from a request parameter.
      * Returns -1 when the parameter is missing or not a positive number.
      */

@@ -38,6 +38,9 @@ public final class ValidationUtil {
     /** Indian 10-digit mobile number that starts with 6, 7, 8 or 9. */
     private static final Pattern PHONE_PATTERN = Pattern.compile("^[6-9][0-9]{9}$");
 
+    /** Administrator usernames: 4-50 letters, digits, dots or underscores. */
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("^[A-Za-z0-9._]{4,50}$");
+
     public static final int MAX_NAME_LENGTH = 100;
     public static final int MAX_EMAIL_LENGTH = 100;
     public static final int MIN_ADDRESS_LENGTH = 5;
@@ -177,6 +180,10 @@ public final class ValidationUtil {
         }
         int length = address.trim().length();
         return length >= MIN_ADDRESS_LENGTH && length <= MAX_ADDRESS_LENGTH;
+    }
+
+    public static boolean isValidUsername(String username) {
+        return username != null && USERNAME_PATTERN.matcher(username).matches();
     }
 
     public static boolean isValidStatus(String status) {

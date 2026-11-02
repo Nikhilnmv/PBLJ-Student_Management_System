@@ -10,8 +10,8 @@ import java.sql.SQLException;
 
 /**
  * DAO (Data Access Object) for the "admin" table.
- * Used by LoginServlet (to check credentials) and by the AdminSetup tool
- * (to create the first administrator account).
+ * Used by LoginServlet (to check credentials), SetupServlet (first-time
+ * setup page) and the AdminSetup command-line tool.
  */
 public class AdminDAO {
 
@@ -20,6 +20,8 @@ public class AdminDAO {
 
     private static final String INSERT_ADMIN_SQL =
             "INSERT INTO admin (username, password_hash) VALUES (?, ?)";
+
+    private static final String COUNT_ADMINS_SQL = "SELECT COUNT(*) FROM admin";
 
     private static final String UPDATE_PASSWORD_SQL =
             "UPDATE admin SET password_hash = ? WHERE username = ?";
@@ -57,6 +59,19 @@ public class AdminDAO {
             statement.setString(1, username);
             statement.setString(2, passwordHash);
             statement.executeUpdate();
+        }
+    }
+
+    /**
+     * Number of administrator accounts. 0 means the application has just been
+     * installed, so the first-time setup page (/setup) is allowed.
+     */
+    public int countAdmins() throws SQLException {
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(COUNT_ADMINS_SQL);
+             ResultSet resultSet = statement.executeQuery()) {
+            resultSet.next();
+            return resultSet.getInt(1);
         }
     }
 

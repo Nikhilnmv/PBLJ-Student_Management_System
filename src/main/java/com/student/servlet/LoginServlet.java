@@ -4,6 +4,7 @@ import com.student.dao.AdminDAO;
 import com.student.filter.AuthFilter;
 import com.student.model.Admin;
 import com.student.util.CsrfUtil;
+import com.student.util.DBConnection;
 import com.student.util.PasswordUtil;
 
 import javax.servlet.ServletException;
@@ -19,7 +20,8 @@ import java.sql.SQLException;
  * CONTROLLER for administrator login.
  *
  * URL: /login
- *   GET  -> shows the login form (login.jsp)
+ *   GET  -> shows the login form (login.jsp); if no administrator exists yet,
+ *           redirects to the first-time setup page (/setup)
  *   POST -> checks the username and password against the "admin" table
  *
  * On success, the Admin is stored in a NEW HttpSession and the browser is
@@ -46,6 +48,16 @@ public class LoginServlet extends HttpServlet {
         if (session != null && session.getAttribute(AuthFilter.ADMIN_SESSION_ATTRIBUTE) != null) {
             response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             return;
+        }
+        try {
+            // Brand-new installation with no administrator yet: go to the first-time setup page
+            if (adminDAO.countAdmins() == 0) {
+                response.sendRedirect(request.getContextPath() + "/setup");
+                return;
+            }
+        } catch (SQLException e) {
+            log("Login page: database problem", e);
+            request.setAttribute("error", DBConnection.explain(e));
         }
         request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
     }
@@ -94,8 +106,8 @@ public class LoginServlet extends HttpServlet {
 
         } catch (SQLException e) {
             log("Login failed because the database is unavailable", e);
-            showLoginError(request, response, username,
-                    "The database is not available right now. Please try again later.");
+            // Explains the likely cause, e.g. "Make sure MySQL is running"
+            showLoginError(request, response, username, DBConnection.explain(e));
         }
     }
 

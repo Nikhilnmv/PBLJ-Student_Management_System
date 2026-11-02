@@ -91,6 +91,42 @@ public final class DBConnection {
     }
 
     /**
+     * Turns a database error into a short, beginner-friendly explanation of
+     * what to fix. Used on the login and first-time setup pages, where a new
+     * user is most likely to meet a configuration problem.
+     *
+     * MySQL error codes used: 1045 = wrong username/password,
+     * 1049 = unknown database, 1146 = table does not exist.
+     * SQL states starting with "08" mean the connection itself failed.
+     */
+    public static String explain(SQLException e) {
+        String message = e.getMessage() == null ? "" : e.getMessage();
+        String sqlState = e.getSQLState() == null ? "" : e.getSQLState();
+
+        if (message.startsWith("Database is not configured")) {
+            return "The database settings are missing. Create src/main/resources/db.properties "
+                    + "(copy db.properties.example) or simply run start.bat / start.sh, then restart.";
+        }
+        switch (e.getErrorCode()) {
+            case 1045:
+                return "MySQL refused the username or password. Check db.user and db.password in "
+                        + "src/main/resources/db.properties, then restart the application.";
+            case 1049:
+                return "The database 'student_registration_db' does not exist yet. "
+                        + "Run database/schema.sql in MySQL Workbench.";
+            case 1146:
+                return "The database tables are missing. Run database/schema.sql in MySQL Workbench.";
+            default:
+                break;
+        }
+        if (sqlState.startsWith("08")) {
+            return "Cannot reach the MySQL server on localhost:3306. Make sure MySQL is running "
+                    + "(Windows: Services -> MySQL80 -> Start; macOS: System Settings -> MySQL -> Start).";
+        }
+        return "Database error: " + message;
+    }
+
+    /**
      * Reads db.properties from the classpath. Returns an empty Properties
      * object if the file does not exist (environment variables may be used instead).
      */

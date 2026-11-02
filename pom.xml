@@ -124,6 +124,33 @@
             </plugin>
 
             <!--
+                Cargo: downloads Apache Tomcat 9 automatically and runs the application in it,
+                so Tomcat does not have to be installed by hand.
+                    mvnw package cargo:run      (or simply use start.bat / start.sh)
+                Then open http://localhost:8080/student-registration/   (Ctrl+C stops Tomcat)
+            -->
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven3-plugin</artifactId>
+                <version>1.10.16</version>
+                <configuration>
+                    <container>
+                        <containerId>tomcat9x</containerId>
+                        <artifactInstaller>
+                            <groupId>org.apache.tomcat</groupId>
+                            <artifactId>tomcat</artifactId>
+                            <version>9.0.111</version>
+                        </artifactInstaller>
+                    </container>
+                    <configuration>
+                        <properties>
+                            <cargo.servlet.port>8080</cargo.servlet.port>
+                        </properties>
+                    </configuration>
+                </configuration>
+            </plugin>
+
+            <!--
                 Lets us run the one-time admin setup tool from the terminal:
                 mvn compile exec:java -Dexec.mainClass=com.student.util.AdminSetup
             -->

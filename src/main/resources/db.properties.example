@@ -19,8 +19,9 @@
 #   allowPublicKeyRetrieval=true  -> needed by MySQL 8's default login plugin when SSL is off
 db.url=jdbc:mysql://localhost:3306/student_registration_db?useSSL=false&allowPublicKeyRetrieval=true
 
-# MySQL user that the application logs in as (see docs/SETUP_AND_EXECUTION.md)
-db.user=srs_app
+# MySQL user the application logs in as: root is fine on your own laptop;
+# a dedicated user such as srs_app is safer (see docs/SETUP_AND_EXECUTION.md)
+db.user=root
 
 # The password for that MySQL user
 db.password=CHANGE_ME

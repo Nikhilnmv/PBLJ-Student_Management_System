@@ -96,6 +96,16 @@ class ValidationUtilTest {
     }
 
     @Test
+    void adminUsernameValidation() {
+        assertTrue(ValidationUtil.isValidUsername("admin"));
+        assertTrue(ValidationUtil.isValidUsername("office.staff_01"));
+        assertFalse(ValidationUtil.isValidUsername("abc"));           // too short
+        assertFalse(ValidationUtil.isValidUsername("with space"));
+        assertFalse(ValidationUtil.isValidUsername("admin'--"));      // SQL characters
+        assertFalse(ValidationUtil.isValidUsername(null));
+    }
+
+    @Test
     void semesterRange() {
         assertFalse(ValidationUtil.isValidSemester(0));
         assertTrue(ValidationUtil.isValidSemester(1));

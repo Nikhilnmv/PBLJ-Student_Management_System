@@ -1,0 +1,10 @@
+# Keep the right line endings for scripts, whatever computer checks them out
+*.sh      text eol=lf
+mvnw      text eol=lf
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+*.ps1     text eol=crlf
+# Binary files
+*.png     binary
+*.woff    binary
+*.woff2   binary

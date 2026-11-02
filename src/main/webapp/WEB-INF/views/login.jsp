@@ -51,6 +51,11 @@
                             <i class="bi bi-exclamation-circle-fill"></i><div><c:out value="${error}"/></div>
                         </div>
                     </c:if>
+                    <c:if test="${param.setup == 'done' and empty error}">
+                        <div class="alert alert-success" role="alert">
+                            <i class="bi bi-check-circle-fill"></i><div>Administrator account created. Please sign in.</div>
+                        </div>
+                    </c:if>
                     <c:if test="${param.logout == 'true' and empty error}">
                         <div class="alert alert-success" role="alert">
                             <i class="bi bi-check-circle-fill"></i><div>You have been logged out successfully.</div>

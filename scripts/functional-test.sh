@@ -151,6 +151,10 @@ expect_in_page TC-REG-12 "Department not in the list is rejected" "Please select
 # =====================================================================
 echo; echo "2. Authentication and access control"
 # =====================================================================
+expect_equal TC-AUTH-13 "First-time setup page is closed once an admin exists" \
+    "$(location "$BASE_URL/setup")" "302 /login"
+expect_equal TC-AUTH-14 "Creating another admin through /setup is refused" \
+    "$(location -X POST "$BASE_URL/setup" --data "username=intruder&password=Intruder123&confirmPassword=Intruder123")" "302 /login"
 expect_equal TC-AUTH-05 "Dashboard without login redirects to login" \
     "$(location "$BASE_URL/admin/dashboard")" "302 /login?required=true"
 for path in /admin/students "/admin/students/view?id=1" /admin/students/add /admin/students/export; do

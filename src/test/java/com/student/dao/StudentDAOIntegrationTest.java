@@ -246,7 +246,9 @@ class StudentDAOIntegrationTest {
     @DisplayName("AdminDAO stores and finds an admin; the password hash verifies")
     void adminCreateFindAndReset() throws Exception {
         assertNull(adminDAO.findByUsername("itest_admin"));
+        int adminsBefore = adminDAO.countAdmins();
         adminDAO.createAdmin("itest_admin", PasswordUtil.hashPassword("Initial123"));
+        assertEquals(adminsBefore + 1, adminDAO.countAdmins());
 
         Admin admin = adminDAO.findByUsername("itest_admin");
         assertNotNull(admin);

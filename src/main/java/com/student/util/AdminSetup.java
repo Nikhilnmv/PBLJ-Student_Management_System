@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
 /**
  * ONE-TIME SETUP TOOL: creates the first administrator account
@@ -28,9 +27,6 @@ import java.util.regex.Pattern;
  * (db.properties or the DB_URL / DB_USER / DB_PASSWORD environment variables).
  */
 public final class AdminSetup {
-
-    /** Usernames: 4-50 letters, digits, dots or underscores. */
-    private static final Pattern USERNAME_PATTERN = Pattern.compile("^[A-Za-z0-9._]{4,50}$");
 
     private final AdminDAO adminDAO = new AdminDAO();
     private final Console console = System.console();
@@ -102,7 +98,7 @@ public final class AdminSetup {
                 return null;
             }
             username = username.trim();
-            if (USERNAME_PATTERN.matcher(username).matches()) {
+            if (ValidationUtil.isValidUsername(username)) {
                 return username;
             }
             System.out.println("Invalid username. Please try again.");
